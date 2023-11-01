@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 const MyRequest = () => {
     const [items, setItems] = useState({
-        Company:'',
+        Company:'BSES',
         District:'',
         RequestType:'New Connection',
         Email:'',
         MobileNo:'',
-        EntryDate:'2023-10-31',
     },[]);
-
     useEffect(() => {
         console.log("API");
         fetch('http://localhost:5228/api/NewConnection/GetMyRequest')
@@ -41,7 +39,6 @@ const MyRequest = () => {
     };
 
     const isDataAvailable = Array.isArray(items) && items.length > 0;
-
     return (
         <div>
             <h3>Consumer Requests</h3>
@@ -54,6 +51,7 @@ const MyRequest = () => {
                             <th>District</th>
                             <th>Request Type</th>
                             <th>Name</th>
+                            <th>Author Name</th>
                             <th>Email Id</th>
                             <th>Mobile No</th>
                             <th>Entry Date</th>
@@ -63,13 +61,14 @@ const MyRequest = () => {
                         {items.map((user, index) => (
                             <tr key={index}>
                                 <td style={tdStyle}>{user.requestNo}</td>
-                                <td style={tdStyle}>{user.Company}</td>
+                                <td style={tdStyle}>{user.Company||'BSES'}</td>
                                 <td style={tdStyle}>{user.District}</td>
-                                <td style={tdStyle}>{user.RequestType}</td>
+                                <td style={tdStyle}>{user.RequestType||'New Connection'}</td>
                                 <td style={tdStyle}>{user.name}</td>
+                                <td style={tdStyle}>{user.authorname}</td>
                                 <td style={tdStyle}>{user.Email}</td>
                                 <td style={tdStyle}>{user.MobileNo}</td>
-                                <td style={tdStyle}>{user.EntryDate}</td>
+                                <td style={tdStyle}>{user.entryDate}</td>
                             </tr>
                         ))}
                     </tbody>
