@@ -55,7 +55,7 @@ const User_Details = () => {
         const regexName = /^[A-Za-z\s]+$/;
         const regexFHname = /^[A-Za-z\s]+$/;
         const newErrors = { ...errors };
-        if (formData.name && formData.FHname && !regexName.test(formData.name) && !regexFHname.test(formData.FHname)) {
+        if (formData.name && formData.FHname && !regexName.test(formData.name) || !regexFHname.test(formData.FHname)) {
             newErrors.name = 'Please enter a valid name';
             newErrors.FHname = 'Please enter a valid name';
         } else {
@@ -91,7 +91,7 @@ const User_Details = () => {
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
-        validateInput();   //validating the form input by calling validateInput function
+        validateInput();  
     };
 
     const handleSubmit = async (event) => {
