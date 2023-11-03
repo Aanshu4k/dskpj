@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -16,6 +16,7 @@ const User_Details = () => {
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         return `${entryDate}`;
     }
+    
     const [formData, setFormData] = useState({
         RequestNo: generateUniqueRequestNumber(),
         ConsumerType: 'individual',
@@ -50,18 +51,29 @@ const User_Details = () => {
         SignatureData: 'null',
         EntryDate: entrydate(),
     }, []);
+    const [CType, setCType] = useState({
+        ConsumerType:'', Ct_id:'',
+    },[]);
+    useEffect(() => {
+        fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
+          .then(response => response.json())
+          .then((data) => {
+            console.log('Data received:', data);
+            setCType(data);
+        })
+        .catch((error) => console.error('Error fetching data:', error));
+      }, []); 
 
     const validateInput = () => {
         const regexName = /^[A-Za-z\s]+$/;
         const regexFHname = /^[A-Za-z\s]+$/;
         const newErrors = { ...errors };
-        if (formData.name && formData.FHname && !regexName.test(formData.name) || !regexFHname.test(formData.FHname)) {
+        if ((formData.name || formData.FHname) && (!regexName.test(formData.name) || !regexFHname.test(formData.FHname))) {
             newErrors.name = 'Please enter a valid name';
             newErrors.FHname = 'Please enter a valid name';
         } else {
             newErrors.name = '';
             newErrors.FHname = '';
-            
         }
         setErrors(newErrors);
     };
@@ -145,12 +157,12 @@ const User_Details = () => {
                                         required
                                     >
 
-                                        <option value="individual">Individual</option>
-                                        <option value="firm">Firm/Trust/Company/Others</option>
+                                        <option value={CType.Ct_id}>{CType.ConsumerType}</option>
+                                        <option value={CType.Ct_id}>{CType.ConsumerType}</option>
                                     </Form.Select>
                                 </label>
                                 <br />
-                                {formData.ConsumerType === 'individual' && (
+                                {CType.Ct_id=== 1 && (
                                     <>
                                         <label>
                                             Title<span>*</span>
@@ -231,7 +243,7 @@ const User_Details = () => {
 
                                     </>
                                 )}
-                                {formData.ConsumerType === 'firm' && (
+                                {CType.Ct_id === 2 && (
                                     <div style={{}}>
                                         <br />
                                         <Form.Group>
