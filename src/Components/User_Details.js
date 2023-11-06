@@ -4,6 +4,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import './User_Details.css';
+
 const User_Details = () => {
     const generateUniqueRequestNumber = () => {
         const date = new Date();
@@ -16,7 +17,7 @@ const User_Details = () => {
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         return `${entryDate}`;
     }
-    
+
     const [formData, setFormData] = useState({
         RequestNo: generateUniqueRequestNumber(),
         ConsumerType: 'individual',
@@ -51,18 +52,20 @@ const User_Details = () => {
         SignatureData: 'null',
         EntryDate: entrydate(),
     }, []);
+
     const [CType, setCType] = useState({
-        ConsumerType:'', Ct_id:'',
-    },[]);
+       ct_id:0, consumerType:''
+    }, []);
+    const [selection, setSelection] = useState(1)
     useEffect(() => {
         fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
-          .then(response => response.json())
-          .then((data) => {
-            console.log('Data received:', data);
-            setCType(data);
-        })
-        .catch((error) => console.error('Error fetching data:', error));
-      }, []); 
+            .then(response => response.json())
+            .then((data) => {
+                console.log('Data received:', data);
+                setCType(data);
+            })
+            .catch((error) => console.error('Error fetching data:', error));
+    }, []);
 
     const validateInput = () => {
         const regexName = /^[A-Za-z\s]+$/;
@@ -101,9 +104,15 @@ const User_Details = () => {
     };
 
     const handleInputChange = (event) => {
+        //console.log(" Event ka data  "  + event.target.value)
         const { name, value } = event.target;
+        if (name === 'ConsumerType') 
+        {
+            setSelection(value); 
+        }
         setFormData({ ...formData, [name]: value });
-        validateInput();  
+        // setCType({ ...CType, [name]: value });
+        validateInput();
     };
 
     const handleSubmit = async (event) => {
@@ -129,6 +138,7 @@ const User_Details = () => {
             console.error('Error:', error);
         }
     };
+    
     return (
         <div>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -147,7 +157,7 @@ const User_Details = () => {
                 <Form onSubmit={handleSubmit}>
                     <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
-                            <Form.Group className="mb-3" style={{}}>
+                            <Form.Group className="mb-3" >
                                 <label>
                                     Consumer Type<span>*</span>
                                     <Form.Select
@@ -156,13 +166,19 @@ const User_Details = () => {
                                         onChange={handleInputChange}
                                         required
                                     >
-
-                                        <option value={CType.Ct_id}>{CType.ConsumerType}</option>
-                                        <option value={CType.Ct_id}>{CType.ConsumerType}</option>
+                                        {/* {CType.map(item => (
+                                            <option key={item.ct_id} value={item.ct_id}>{item.consumerType}</option>
+                                        ))} */}
+                                        {
+                                            Object.values(CType).map((item, index) => (  //iterating over values not keys
+                                                <option key={index} value={item.ct_id} >{item.consumerType}</option>    ))
+                                        }
                                     </Form.Select>
                                 </label>
                                 <br />
-                                {CType.Ct_id=== 1 && (
+                                {/* {CType.ct_id === 1 && ( */}
+                                {
+                                selection === '1' && (
                                     <>
                                         <label>
                                             Title<span>*</span>
@@ -180,7 +196,7 @@ const User_Details = () => {
                                         </label>
                                         <br />
                                         <Form.Label>Name<span>*</span></Form.Label>
-                                        <Form.Group style={{display:'flex',flexDirection:'column', width: '150%' }}>
+                                        <Form.Group style={{ display: 'flex', flexDirection: 'column', width: '150%' }}>
                                             <Form.Control
                                                 type="text"
                                                 placeholder="Name"
@@ -243,7 +259,8 @@ const User_Details = () => {
 
                                     </>
                                 )}
-                                {CType.Ct_id === 2 && (
+                                {/* {CType.ct_id === 2 && ( */}
+                                {selection === '2' && (
                                     <div style={{}}>
                                         <br />
                                         <Form.Group>
