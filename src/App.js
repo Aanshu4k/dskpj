@@ -10,6 +10,7 @@ import ConnectionDetails from './Components/ConnectionDetails';
 import MyRequest from './Components/MyRequest';
 import { BrowserRouter as Router, Route, Routes, Link, Switch } from 'react-router-dom';
 import LoginPage from './Components/LoginPage';
+import Product from './Components/Product';
 function App() {
   return (
     <div className="App" style={{ margin: '20px 10px', alignContent: 'center' }}>

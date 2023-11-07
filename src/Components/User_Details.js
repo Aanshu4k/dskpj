@@ -6,12 +6,12 @@ import Container from 'react-bootstrap/Container';
 import './User_Details.css';
 
 const User_Details = () => {
-    const generateUniqueRequestNumber = () => {
-        const date = new Date();
-        const formattedDate = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}`;
-        const randomDigits = Math.floor(1000 + Math.random() * 1000);
-        return `R${formattedDate}${randomDigits}`;
-    };
+    // const generateUniqueRequestNumber = () => {
+    //     const date = new Date();
+    //     const formattedDate = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}`;
+    //     const randomDigits = Math.floor(1000 + Math.random() * 1000);
+    //     return `R${formattedDate}${randomDigits}`;
+    // };
     const entrydate = () => {
         const date = new Date();
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -19,8 +19,8 @@ const User_Details = () => {
     }
 
     const [formData, setFormData] = useState({
-        RequestNo: generateUniqueRequestNumber(),
-        ConsumerType: 'individual',
+        RequestNo: '',
+        ConsumerType: '',
         title: '',
         name: '',
         salutation: '',
@@ -54,18 +54,34 @@ const User_Details = () => {
     }, []);
 
     const [CType, setCType] = useState({
-       ct_id:0, consumerType:''
+        ct_id: 0, consumerType: '',
     }, []);
-    const [selection, setSelection] = useState(1)
+    const [selection, setSelection] = useState('1')
     useEffect(() => {
         fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
             .then(response => response.json())
             .then((data) => {
                 console.log('Data received:', data);
                 setCType(data);
+                //     const consumerTypes=data.reduce((acc,item)=> {acc[item.ct_id]=item.consumerType;
+                //     return acc;
+                // },{});
+                // setSelection(consumerTypes[data[0].ct_id]);
             })
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
+
+    const [RNo,setRNo]=useState('');
+    useEffect(() => {
+        fetch('http://localhost:5228/api/NewConnection')
+            .then(response => response.json())
+            .then((data) => {
+                console.log('Data received:', data);
+                setRNo(data);
+            })
+            .catch((error) => console.error('Error fetching data:', error));
+    }, []);
+
 
     const validateInput = () => {
         const regexName = /^[A-Za-z\s]+$/;
@@ -104,17 +120,16 @@ const User_Details = () => {
     };
 
     const handleInputChange = (event) => {
-        //console.log(" Event ka data  "  + event.target.value)
         const { name, value } = event.target;
+        console.log(event.target.value);
         if (name === 'ConsumerType') 
         {
             setSelection(value); 
         }
         setFormData({ ...formData, [name]: value });
-        // setCType({ ...CType, [name]: value });
+        setCType({ ...CType, [name]: value });
         validateInput();
     };
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
@@ -138,7 +153,7 @@ const User_Details = () => {
             console.error('Error:', error);
         }
     };
-    
+
     return (
         <div>
             <Navbar expand="lg" className="bg-body-tertiary">
@@ -146,7 +161,7 @@ const User_Details = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto" style={{ alignItems: 'left' }}>
-                            <b>Apply Online / New Connection / Request No: {formData.RequestNo}</b>
+                            <b>Apply Online / New Connection / Request No: {RNo.RequestNo}</b>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
@@ -171,95 +186,93 @@ const User_Details = () => {
                                         ))} */}
                                         {
                                             Object.values(CType).map((item, index) => (  //iterating over values not keys
-                                                <option key={index} value={item.ct_id} >{item.consumerType}</option>    ))
+                                                <option key={index} value={item.ct_id} >{item.consumerType}</option>))
                                         }
                                     </Form.Select>
                                 </label>
                                 <br />
-                                {/* {CType.ct_id === 1 && ( */}
                                 {
-                                selection === '1' && (
-                                    <>
-                                        <label>
-                                            Title<span>*</span>
-                                            <Form.Select
-                                                name="title"
-                                                value={formData.title}
-                                                onChange={handleInputChange}
-                                                required
-                                            >
-                                                <option value="select">Select</option>
-                                                <option value="Mr.">Mr.</option>
-                                                <option value="Mrs.">Mrs.</option>
-                                                <option value="other">Other</option>
-                                            </Form.Select>
-                                        </label>
-                                        <br />
-                                        <Form.Label>Name<span>*</span></Form.Label>
-                                        <Form.Group style={{ display: 'flex', flexDirection: 'column', width: '150%' }}>
-                                            <Form.Control
-                                                type="text"
-                                                placeholder="Name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
-                                            <Form.Label></Form.Label>
-                                        </Form.Group>
-                                        <br />
-                                        <Form.Group style={{ display: 'flex', justifyContent: 'space-between', width: 'auto' }}>
+                                    selection === '1' && (
+                                        <>
                                             <label>
-                                                <input
-                                                    type="radio"
-                                                    name="salutation"
-                                                    value="Son of"
-                                                    checked={formData.salutation === 'Son of'}
+                                                Title<span>*</span>
+                                                <Form.Select
+                                                    name="title"
+                                                    value={formData.title}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                >
+                                                    <option value="select">Select</option>
+                                                    <option value="Mr.">Mr.</option>
+                                                    <option value="Mrs.">Mrs.</option>
+                                                    <option value="other">Other</option>
+                                                </Form.Select>
+                                            </label>
+                                            <br />
+                                            <Form.Label>Name<span>*</span></Form.Label>
+                                            <Form.Group style={{ display: 'flex', flexDirection: 'column', width: '150%' }}>
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Name"
+                                                    name="name"
+                                                    value={formData.name}
                                                     onChange={handleInputChange}
                                                     required
                                                 />
-                                                Son Of
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    value="Daughter of"
-                                                    checked={formData.salutation === 'Daughter of'}
-                                                    name="salutation"
+                                                {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
+                                                <Form.Label></Form.Label>
+                                            </Form.Group>
+                                            <br />
+                                            <Form.Group style={{ display: 'flex', justifyContent: 'space-between', width: 'auto' }}>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        name="salutation"
+                                                        value="Son of"
+                                                        checked={formData.salutation === 'Son of'}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    Son Of
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        value="Daughter of"
+                                                        checked={formData.salutation === 'Daughter of'}
+                                                        name="salutation"
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    Daughter Of
+                                                </label>
+                                                <label>
+                                                    <input
+                                                        type="radio"
+                                                        name="salutation"
+                                                        value="Wife of"
+                                                        checked={formData.salutation === 'Wife of'}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    Wife Of
+                                                </label>
+                                            </Form.Group>
+                                            <br />
+                                            <Form.Group>
+                                                <Form.Label>Father/Husband's Name<span>*</span></Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="FHname"
+                                                    value={formData.FHname}
                                                     onChange={handleInputChange}
                                                     required
                                                 />
-                                                Daughter Of
-                                            </label>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="salutation"
-                                                    value="Wife of"
-                                                    checked={formData.salutation === 'Wife of'}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                />
-                                                Wife Of
-                                            </label>
-                                        </Form.Group>
-                                        <br />
-                                        <Form.Group>
-                                            <Form.Label>Father/Husband's Name<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="FHname"
-                                                value={formData.FHname}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            {errors.FHname && <span style={{ color: 'red' }}>{errors.FHname}</span>}
-                                        </Form.Group>
+                                                {errors.FHname && <span style={{ color: 'red' }}>{errors.FHname}</span>}
+                                            </Form.Group>
 
-                                    </>
-                                )}
-                                {/* {CType.ct_id === 2 && ( */}
+                                        </>
+                                    )}
                                 {selection === '2' && (
                                     <div style={{}}>
                                         <br />
