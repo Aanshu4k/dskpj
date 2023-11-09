@@ -38,7 +38,7 @@ public class NewConnection : ControllerBase
                             Ctype_mst md = new Ctype_mst
                             {
                                  ConsumerType = reader["ConsumerType"].ToString(),
-                                 Ct_id = reader["Ct_id"].ToString(),
+                                 Ct_id = Convert.ToInt32(reader["Ct_id"].ToString()),
                             };
                             MasterData.Add(md);
                         }
@@ -102,6 +102,42 @@ public class NewConnection : ControllerBase
         }
         return ConsumerDetailsList;
     }
+    [HttpGet("GetRNo", Name = "GetRNo")]
+    public IEnumerable<RNo> GetRNo()
+    {
+        string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
+
+        List<RNo> rn = new List<RNo>();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            try
+            {
+                connection.Open();
+                Console.WriteLine("Connected to the MySQL database.");
+                string sqlQuery = "SELECT count(RequestNo) from Cinfo";
+                using (MySqlCommand cmd = new MySqlCommand(sqlQuery, connection))
+                {
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            RNo rNo = new RNo();
+                            {
+                                rNo.RNum = reader["RequestNo"].ToString();
+                            };
+                            rn.Add(rNo);
+                        }
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
+        }
+        return rn;
+    }
 
     [HttpPost(Name = "PostConsumerDetails")]
     public IActionResult POST([FromBody] ConsumerDetails ud)
@@ -156,6 +192,7 @@ public class NewConnection : ControllerBase
             }
         }
     }
+
     [HttpGet("GetMyRequest")]
     public IEnumerable<MyRequestData> GetMyRequest()
     {
