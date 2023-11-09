@@ -37,9 +37,7 @@ const User_Details = () => {
         EntryDate: entrydate(),
     }, []);
     const [errors, setErrors] = useState({
-        title: '',
         name: '',
-        salutation: '',
         FHname: '',
         FirmName: '',
         Authorname: '',
@@ -53,9 +51,7 @@ const User_Details = () => {
         EntryDate: entrydate(),
     }, []);
 
-    const [CType, setCType] = useState({
-        ct_id: 0, consumerType: '',
-    }, []);
+    const [CType, setCType] = useState([]);
     const [selection, setSelection] = useState('1')
     useEffect(() => {
         fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
@@ -63,17 +59,14 @@ const User_Details = () => {
             .then((data) => {
                 console.log('Data received:', data);
                 setCType(data);
-                //     const consumerTypes=data.reduce((acc,item)=> {acc[item.ct_id]=item.consumerType;
-                //     return acc;
-                // },{});
-                // setSelection(consumerTypes[data[0].ct_id]);
             })
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
-
-    const [RNo,setRNo]=useState('');
+    //To fetch requestNo from the get api 
+    const [RNo, setRNo] = useState([]);
     useEffect(() => {
-        fetch('http://localhost:5228/api/NewConnection')
+        //debugger;
+        fetch('http://localhost:5228/api/NewConnection/GetRNo')
             .then(response => response.json())
             .then((data) => {
                 console.log('Data received:', data);
@@ -81,23 +74,6 @@ const User_Details = () => {
             })
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
-
-
-    const validateInput = () => {
-        const regexName = /^[A-Za-z\s]+$/;
-        const regexFHname = /^[A-Za-z\s]+$/;
-        const newErrors = { ...errors };
-        if ((formData.name || formData.FHname) && (!regexName.test(formData.name) || !regexFHname.test(formData.FHname))) {
-            newErrors.name = 'Please enter a valid name';
-            newErrors.FHname = 'Please enter a valid name';
-        } else {
-            newErrors.name = '';
-            newErrors.FHname = '';
-        }
-        setErrors(newErrors);
-    };
-
-
     const handleSaveDraft = () => {
         const draftData = { RequestNo: formData.RequestNo, ...formData };
         fetch('http://localhost:5228/api/NewConnection/SaveDraft', {
@@ -121,36 +97,68 @@ const User_Details = () => {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        console.log(event.target.value);
-        if (name === 'ConsumerType') 
-        {
-            setSelection(value); 
+        // console.log(event.target.value);
+        if (name === 'ConsumerType') {
+            setSelection(value);
         }
         setFormData({ ...formData, [name]: value });
-        setCType({ ...CType, [name]: value });
+        // setCType({ ...CType, [name]: value });
         validateInput();
+    };
+    const validateInput = () => {
+        const { name, FHname, GSTNo, PANNo } = formData;
+        const newErrors = {
+            name: '', FHname: '', GSTNo: '', PANNo: ''
+        }
+        const nameRegex = /^[A-Za-z\s]+$/;
+        const FHnameRegex = /^[A-Za-z\s]+$/;
+        const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
+        const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
+        let isValid = true;
+        if (!nameRegex.test(name)) {
+            newErrors.name = 'Entered Name is invalid';
+            isValid = false;
+        }
+        if (!FHnameRegex.test(FHname)) {
+            newErrors.FHname = 'Entered Name is invalid';
+            isValid = false;
+        }
+        if (!gstRegex.test(GSTNo)) {
+            newErrors.GSTNo = 'GST number is invalid';
+            isValid = false;
+        }
+        if (!panRegex.test(PANNo)) {
+            newErrors.PANNo = 'PAN number is invalid';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
     };
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
-            const response = await fetch("http://localhost:5228/api/NewConnection", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                alert('Data submitted successfully');
-                console.log('Data submitted successfully');
-            } else {
-                console.error('Error submitting data. Response Status: ' + response.status);
-                const responseText = await response.text();
-                console.error('Error Message: ' + responseText);
+        if (validateInput()) {
+            try {
+                const response = await fetch("http://localhost:5228/api/NewConnection", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+                if (response.ok) {
+                    alert('Data submitted successfully');
+                    console.log('Data submitted successfully');
+                } else {
+                    console.error('Error submitting data. Response Status: ' + response.status);
+                    const responseText = await response.text();
+                    console.error('Error Message: ' + responseText);
+                }
+            } catch (error) {
+                console.error('Error:', error);
             }
-        } catch (error) {
-            console.error('Error:', error);
+        }
+        else {
+            console.log('Form is not valid. Please fix errors.');
         }
     };
 
@@ -161,18 +169,22 @@ const User_Details = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto" style={{ alignItems: 'left' }}>
-                            <b>Apply Online / New Connection / Request No: {RNo.RequestNo}</b>
+                            <b>Apply Online / New Connection / Request No:
+                                {RNo.rNum}  
+                            </b>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
             <br />
+            
             <div style={{ border: "2px solid #ccc", padding: '0px 0px 20px 20px' }}>
                 <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
                 <Form onSubmit={handleSubmit}>
                     <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
                             <Form.Group className="mb-3" >
+                            
                                 <label>
                                     Consumer Type<span>*</span>
                                     <Form.Select
@@ -219,7 +231,7 @@ const User_Details = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                 />
-                                                {errors.name && <span style={{ color: 'red' }}>{errors.name}</span>}
+                                                <span style={{ color: 'red' }}>{errors.name}</span>
                                                 <Form.Label></Form.Label>
                                             </Form.Group>
                                             <br />
@@ -268,7 +280,7 @@ const User_Details = () => {
                                                     onChange={handleInputChange}
                                                     required
                                                 />
-                                                {errors.FHname && <span style={{ color: 'red' }}>{errors.FHname}</span>}
+                                                <span style={{ color: 'red' }}>{errors.FHname}</span>
                                             </Form.Group>
 
                                         </>
