@@ -63,7 +63,7 @@ const User_Details = () => {
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
     //To fetch requestNo from the get api 
-    const [RNo, setRNo] = useState([]);
+    const [RNo, setRNo] = useState('');
     useEffect(() => {
         //debugger;
         fetch('http://localhost:5228/api/NewConnection/GetRNo')
@@ -74,7 +74,8 @@ const User_Details = () => {
             })
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
-    const handleSaveDraft = () => {
+    const handleSaveDraft = async (event) => {
+        event.preventDefault();
         const draftData = { RequestNo: formData.RequestNo, ...formData };
         fetch('http://localhost:5228/api/NewConnection/SaveDraft', {
             method: 'POST',
@@ -115,21 +116,25 @@ const User_Details = () => {
         const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
         const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
         let isValid = true;
-        if (!nameRegex.test(name)) {
-            newErrors.name = 'Entered Name is invalid';
-            isValid = false;
+        if (selection.value === '1') {
+            if (!nameRegex.test(name)) {
+                newErrors.name = 'Entered Name is invalid';
+                isValid = false;
+            }
+            if (!FHnameRegex.test(FHname)) {
+                newErrors.FHname = 'Entered Name is invalid';
+                isValid = false;
+            }
         }
-        if (!FHnameRegex.test(FHname)) {
-            newErrors.FHname = 'Entered Name is invalid';
-            isValid = false;
-        }
-        if (!gstRegex.test(GSTNo)) {
-            newErrors.GSTNo = 'GST number is invalid';
-            isValid = false;
-        }
-        if (!panRegex.test(PANNo)) {
-            newErrors.PANNo = 'PAN number is invalid';
-            isValid = false;
+        if (selection.value === '2') {
+            if (!gstRegex.test(GSTNo)) {
+                newErrors.GSTNo = 'GST number is invalid';
+                isValid = false;
+            }
+            if (!panRegex.test(PANNo)) {
+                newErrors.PANNo = 'PAN number is invalid';
+                isValid = false;
+            }
         }
         setErrors(newErrors);
         return isValid;
@@ -169,22 +174,19 @@ const User_Details = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto" style={{ alignItems: 'left' }}>
-                            <b>Apply Online / New Connection / Request No:
-                                {RNo.rNum}  
-                            </b>
+                            <b>Apply Online / New Connection / Request No:{"  "}{RNo.rNum}</b>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
             <br />
-            
+
             <div style={{ border: "2px solid #ccc", padding: '0px 0px 20px 20px' }}>
                 <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
                 <Form onSubmit={handleSubmit}>
                     <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
                             <Form.Group className="mb-3" >
-                            
                                 <label>
                                     Consumer Type<span>*</span>
                                     <Form.Select
@@ -193,13 +195,9 @@ const User_Details = () => {
                                         onChange={handleInputChange}
                                         required
                                     >
-                                        {/* {CType.map(item => (
-                                            <option key={item.ct_id} value={item.ct_id}>{item.consumerType}</option>
-                                        ))} */}
-                                        {
-                                            Object.values(CType).map((item, index) => (  //iterating over values not keys
-                                                <option key={index} value={item.ct_id} >{item.consumerType}</option>))
-                                        }
+                                        {CType.map((item, index) => (
+                                            <option key={index} value={item.ct_id}>{item.consumerType}</option>
+                                        ))}
                                     </Form.Select>
                                 </label>
                                 <br />
