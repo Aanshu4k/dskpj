@@ -2,8 +2,12 @@
 {
     public class Ctype_mst
     {
-        public string Ct_id { get; set; }
+        public int Ct_id { get; set; }
         public string ConsumerType { get; set; }
+    }
+    public class RNo
+    {
+        public string RNum { get; set; }
     }
     public class ConsumerDetails:Ctype_mst
     {
