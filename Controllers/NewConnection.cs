@@ -15,12 +15,12 @@ namespace ProjectDSK.Controllers;
 [ApiController]
 public class NewConnection : ControllerBase
 {
-    [HttpGet("Get_Ctype_mst")]
-    public IEnumerable<Ctype_mst> GetCtype_mst()
+    [HttpGet("Get_Ctype_mst",Name = "Get_Ctype_mst")]
+    public IActionResult GetCtype_mst()
     {
         string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
-
-        List<Ctype_mst> MasterData = new List<Ctype_mst>();
+        List<Ctype_mst> ctypeList = new List<Ctype_mst>();
+        //List<Ctype_mst> MasterData = new List<Ctype_mst>();
 
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -35,22 +35,25 @@ public class NewConnection : ControllerBase
                     {
                         while (reader.Read())
                         {
-                            Ctype_mst md = new Ctype_mst
-                            {
-                                 ConsumerType = reader["ConsumerType"].ToString(),
-                                 Ct_id = Convert.ToInt32(reader["Ct_id"].ToString()),
-                            };
-                            MasterData.Add(md);
+                            Ctype_mst md = new Ctype_mst();
+                            md.ConsumerType = reader["ConsumerType"].ToString();
+                            md.Ct_id = Convert.ToInt32(reader["Ct_id"].ToString());
+                            ctypeList.Add(md);
                         }
+                        
                     }
+                    
                 }
+                return Ok(ctypeList);
             }
             catch (MySqlException ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
+                return BadRequest("Unexpected error");
             }
         }
-        return MasterData;
+        
+
     }
     [HttpGet(Name = "GetConsumerDetails")]
     public IEnumerable<ConsumerDetails> Get()
@@ -103,40 +106,41 @@ public class NewConnection : ControllerBase
         return ConsumerDetailsList;
     }
     [HttpGet("GetRNo", Name = "GetRNo")]
-    public IEnumerable<RNo> GetRNo()
+    public IActionResult GetRNo()
     {
         string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
 
-        List<RNo> rn = new List<RNo>();
-
+        //List<RNo> rn = new List<RNo>();
+        RNo rNo = new RNo();
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             try
             {
                 connection.Open();
                 Console.WriteLine("Connected to the MySQL database.");
-                string sqlQuery = "SELECT count(RequestNo) from Cinfo";
+                string sqlQuery = "SELECT  RequestNo from Cinfo";
                 using (MySqlCommand cmd = new MySqlCommand(sqlQuery, connection))
                 {
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            RNo rNo = new RNo();
                             {
                                 rNo.RNum = reader["RequestNo"].ToString();
-                            };
-                            rn.Add(rNo);
+                            }
                         }
                     }
                 }
+                return Ok(rNo);
             }
             catch (MySqlException ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
+                return BadRequest("Error fetching data");
             }
         }
-        return rn;
+        
+
     }
 
     [HttpPost(Name = "PostConsumerDetails")]
@@ -154,7 +158,7 @@ public class NewConnection : ControllerBase
             try
             {
                 connection.Open();
-                string query1 = "INSERT IGNORE INTO cinfo (RequestNo,ConsumerType,Title,name,salutation,fhname,FirmName,Authorname,DesigOfSig,OrgType,IncorpDate,GSTNo,PANNo,EntryDate) " +
+                string query1 = "INSERT INTO cinfo (RequestNo,ConsumerType,Title,name,salutation,fhname,FirmName,Authorname,DesigOfSig,OrgType,IncorpDate,GSTNo,PANNo,EntryDate) " +
                     "VALUES (@RequestNo,@ConsumerType,@title,@name,@salutation,@fhname,@FirmName,@Authorname,@DesigOfSig,@OrgType,@IncorpDate,@GSTNo,@PANNo,@EntryDate)";
                 //IEnumerable<Ctype_mst> ConsumerType = GetCtype_mst();
                 using (MySqlCommand cmd1 = new MySqlCommand(query1, connection)) 
@@ -254,11 +258,12 @@ public class NewConnection : ControllerBase
             try
             {
                 connection.Open();
-                string query = "Insert INTO cinfo (RequestNo, ConsumerType, Title, name, salutation, FHname, FirmName, Authorname, DesigOfSig, OrgType, IncorpDate, GSTNo, PANNo,EntryDate) " +
-                    "VALUES (@RequestNo, @ConsumerType, @Title, @name, @salutation, @FHname, @FirmName, @Authorname, @DesigOfSig, @OrgType, @IncorpDate, @GSTNo, @PANNo, @EntryDate) " +
-                    "ON DUPLICATE KEY UPDATE ConsumerType = VALUES(ConsumerType), Title = VALUES(Title), name = VALUES(name), " +
-                    "salutation = VALUES(salutation), FHname = VALUES(FHname), FirmName = VALUES(FirmName), Authorname = VALUES(Authorname), " +
-                    "DesigOfSig = VALUES(DesigOfSig), OrgType = VALUES(OrgType), IncorpDate = VALUES(IncorpDate), GSTNo = VALUES(GSTNo), PANNo = VALUES(PANNo)";
+                string query = "INSERT INTO cinfo (RequestNo, ConsumerType, Title, name, salutation, FHname, FirmName, Authorname, DesigOfSig, OrgType, IncorpDate, GSTNo, PANNo, EntryDate) " +
+                "VALUES (@RequestNo, @ConsumerType, @Title, @name, @salutation, @FHname, @FirmName, @Authorname, @DesigOfSig, @OrgType, @IncorpDate, @GSTNo, @PANNo, @EntryDate) " +
+                "ON DUPLICATE KEY UPDATE ConsumerType = VALUES(ConsumerType), Title = VALUES(Title), name = VALUES(name), " +
+                "salutation = VALUES(salutation), FHname = VALUES(FHname), FirmName = VALUES(FirmName), Authorname = VALUES(Authorname), " +
+                "DesigOfSig = VALUES(DesigOfSig), OrgType = VALUES(OrgType), IncorpDate = VALUES(IncorpDate), GSTNo = VALUES(GSTNo), PANNo = VALUES(PANNo), EntryDate = VALUES(EntryDate)";
+
 
                 using (MySqlCommand cmd = new MySqlCommand(query, connection))
                 {
@@ -277,7 +282,6 @@ public class NewConnection : ControllerBase
                     cmd.Parameters.AddWithValue("@PANNo", draftData.PANNo);
                     cmd.Parameters.AddWithValue("@EntryDate", draftData.EntryDate);
                     //cmd.Parameters.AddWithValue("@PANNo", draftData.ImageData);
-
                     //cmd.Parameters.AddWithValue("@PANNo", draftData.SignatureData);
                     int affectedRows = cmd.ExecuteNonQuery();
 
