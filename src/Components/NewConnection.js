@@ -2,17 +2,10 @@ import React from 'react';
 import Logo from './Logo';
 import Header from './Header';
 import './App.css';
-import Address from './Address';
 import Row1 from './Row1';
-import Row2 from './Row2';
 import User_Details from './User_Details';
-import ConnectionDetails from './ConnectionDetails';
 import MyRequest from './MyRequest';
 import { BrowserRouter as Router, Route, Routes, Link, Switch } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import Product from './Product';
-import ProductTable from './ProductList';
-import MyForm from './Test';
 const NewConnection=()=> {
   return (
     <div className="App" style={{ margin: '20px 10px', alignContent: 'center' }}>

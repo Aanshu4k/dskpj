@@ -1,39 +1,75 @@
-import react, { useState } from 'react';
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import NewConnection from './NewConnection';
 import Logo from './Logo';
-import Header from './Header';
-import Row1 from './Row1';
 const defaultTheme = createTheme();
 
 const LogIn = (props) => {
+  const generateUuid = () => {
+    const timestamp = new Date().getTime();
+    const uuid = `${timestamp}`;
+    return `${uuid}`;
+  }
+  const [loginData, setLoginData] = useState({
+    mobileNo: '',
+    email: '',
+    uuid: generateUuid(),
+  }, []);
 
   let history = useHistory();
-
-  const handleSubmit = () => {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setLoginData({ ...loginData, [name]: value });
+  };
+  const handleSubmit = async (e) => {
     history.push('/NewConnection');
-  }
-  const [mobileNo, setMobileNo] = useState('');
-  const [email, setEmail] = useState('');
-  return (
 
+    // e.preventDefault();
+    // if (loginData !== null) {
+    //   try {
+    //     const response = await fetch("http://localhost:5228/api/LoginPage", {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify(loginData),
+
+    //     });
+    //     if (response.ok) {
+    //       alert('Login Successfull');
+    //       console.log('Login Data submitted successfully');
+          
+    //     } else {
+    //       console.error('Error submitting data. Response Status: ' + response.status);
+    //       const responseText = await response.text();
+    //       console.error('Error Message: ' + responseText);
+    //     }
+    //   }
+    //   catch (error) {
+    //     console.error('Error:', error);
+    //   }
+    // }
+    // else
+    // {
+    //   alert("Kindly fill the login details !!!");
+    // }
+  }
+
+
+  return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />      
-          <Logo />
+        <CssBaseline />
+        <Logo />
         <Box
           sx={{
             marginTop: 8,
@@ -56,18 +92,19 @@ const LogIn = (props) => {
               label="Mobile Number"
               type="text"
               id="mobileNo"
-              value={mobileNo}
-              onChange={(e) => setMobileNo(e.target.value)}
+              value={loginData.mobileNo}
+              onChange={handleInputChange}
+              required
             />
             <TextField
               margin="normal"
               fullWidth
-              name="Email"
+              name="email"
               label="Email"
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={loginData.email}
+              onChange={handleInputChange}
             />
             <Button
               type="submit"
@@ -78,6 +115,7 @@ const LogIn = (props) => {
             >
               Sign In
             </Button>
+            {/* {loginError && <div>{loginError}</div>} */}
             <Grid container>
 
             </Grid>

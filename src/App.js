@@ -5,16 +5,16 @@ import LogIn from './Components/LoginPage';
 import NewConnection from './Components/NewConnection';
 function App() {
   return (
-      <Router>
-        <div>
-          <Switch>
-            <Route exact path="/LogIn" component={LogIn} />
-            <Route path="/NewConnection" component={NewConnection} />
-            <Redirect to="/LogIn" />
-          </Switch>
-        </div>
-      </Router>
-    
+    <Router>
+      <div>
+        <Switch>
+          <Route exact path="/LogIn" component={LogIn} />
+          <Route path="/NewConnection" component={NewConnection} />
+          <Redirect to="/LogIn" />
+        </Switch>
+      </div>
+    </Router>
+
 
   );
 }

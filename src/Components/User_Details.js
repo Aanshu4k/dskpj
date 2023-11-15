@@ -6,18 +6,12 @@ import Container from 'react-bootstrap/Container';
 import './User_Details.css';
 
 const User_Details = () => {
-    // const generateUniqueRequestNumber = () => {
-    //     const date = new Date();
-    //     const formattedDate = `${date.getDate().toString().padStart(2, '0')}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getFullYear()}`;
-    //     const randomDigits = Math.floor(1000 + Math.random() * 1000);
-    //     return `R${formattedDate}${randomDigits}`;
-    // };
+
     const entrydate = () => {
         const date = new Date();
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         return `${entryDate}`;
     }
-
     const [formData, setFormData] = useState({
         RequestNo: '',
         ConsumerType: '',
@@ -53,6 +47,7 @@ const User_Details = () => {
 
     const [CType, setCType] = useState([]);
     const [selection, setSelection] = useState('1')
+    const [RNo, setRNo] = useState('');
     useEffect(() => {
         fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
             .then(response => response.json())
@@ -63,7 +58,7 @@ const User_Details = () => {
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
     //To fetch requestNo from the get api 
-    const [RNo, setRNo] = useState('');
+    
     useEffect(() => {
         //debugger;
         fetch('http://localhost:5228/api/NewConnection/GetRNo')
