@@ -1,5 +1,7 @@
 
-
+*{
+  padding:3px;
+}
 .App {
   min-height: 10vh;
   display: flex;

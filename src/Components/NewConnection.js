@@ -6,7 +6,7 @@ import Row1 from './Row1';
 import User_Details from './User_Details';
 import MyRequest from './MyRequest';
 import { BrowserRouter as Router, Route, Routes, Link, Switch } from 'react-router-dom';
-const NewConnection=()=> {
+const NewConnection=()=> {  
   return (
     <div className="App" style={{ margin: '20px 10px', alignContent: 'center' }}>
       <div style={{ display: 'flex', padding: '10px', alignItems: 'center' }}>
@@ -32,7 +32,7 @@ const NewConnection=()=> {
           </div>
           <br />
           <Switch>
-            <Route path="/User_Details" component={User_Details} />
+            <Route path="/User_Details" component={User_Details}/>
             <Route path="/MyRequest" component={MyRequest} />
           </Switch>
         </Router>

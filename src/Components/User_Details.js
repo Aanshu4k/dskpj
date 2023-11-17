@@ -4,6 +4,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import './User_Details.css';
+import Address from './Address';
+import ConnectionDetails from './ConnectionDetails';
 
 const User_Details = () => {
 
@@ -12,7 +14,13 @@ const User_Details = () => {
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         return `${entryDate}`;
     }
+    const generateUUID = () => {
+        const timestamp = new Date().getTime();
+        const uniqueString = `${timestamp}_${Math.floor(Math.random() * 1000000)}`;
+        return uniqueString;
+    };
     const [formData, setFormData] = useState({
+        uuid: generateUUID(),
         RequestNo: '',
         ConsumerType: '',
         title: '',
@@ -44,7 +52,6 @@ const User_Details = () => {
         SignatureData: 'null',
         EntryDate: entrydate(),
     }, []);
-
     const [CType, setCType] = useState([]);
     const [selection, setSelection] = useState('1')
     const [RNo, setRNo] = useState('');
@@ -58,7 +65,6 @@ const User_Details = () => {
             .catch((error) => console.error('Error fetching data:', error));
     }, []);
     //To fetch requestNo from the get api 
-    
     useEffect(() => {
         //debugger;
         fetch('http://localhost:5228/api/NewConnection/GetRNo')
@@ -71,7 +77,7 @@ const User_Details = () => {
     }, []);
     const handleSaveDraft = async (event) => {
         event.preventDefault();
-        const draftData = { RequestNo: formData.RequestNo, ...formData };
+        const draftData = { RequestNo: formData.RequestNo, uuid: formData.uuid, ...formData };
         fetch('http://localhost:5228/api/NewConnection/SaveDraft', {
             method: 'POST',
             headers: {
@@ -90,6 +96,7 @@ const User_Details = () => {
                 console.error('Error:', error);
             });
     };
+
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -111,7 +118,7 @@ const User_Details = () => {
         const gstRegex = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
         const panRegex = /[A-Z]{5}[0-9]{4}[A-Z]{1}/;
         let isValid = true;
-        if (selection.value === '1') {
+        if (selection === '1') {
             if (!nameRegex.test(name)) {
                 newErrors.name = 'Entered Name is invalid';
                 isValid = false;
@@ -121,7 +128,7 @@ const User_Details = () => {
                 isValid = false;
             }
         }
-        if (selection.value === '2') {
+        if (selection === '2') {
             if (!gstRegex.test(GSTNo)) {
                 newErrors.GSTNo = 'GST number is invalid';
                 isValid = false;
@@ -159,6 +166,7 @@ const User_Details = () => {
         }
         else {
             console.log('Form is not valid. Please fix errors.');
+            alert('Invalid Input Entered  ')
         }
     };
 
@@ -175,199 +183,210 @@ const User_Details = () => {
                 </Container>
             </Navbar>
             <br />
+            <div style={{ border: "2px solid #ccc", padding: '10px 10px 20px 10px' }}>
+                <div style={{ border: 'solid grey 4px', padding: '10px 10px 0px 20px' }}>
+                    <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
+                    <Form onSubmit={handleSubmit}>
+                        <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                                <Form.Group className="mb-3" >
+                                    <label>
+                                        Consumer Type<span>*</span>
+                                        <Form.Select
+                                            name="ConsumerType"
+                                            value={formData.ConsumerType}
+                                            onChange={handleInputChange}
+                                            required
+                                        >
+                                            {CType.map((item, index) => (
+                                                <option key={index} value={item.ct_id}>{item.consumerType}</option>
+                                            ))}
+                                        </Form.Select>
+                                    </label>
+                                    <br />
+                                    {
+                                        selection === '1' && (
+                                            <>
+                                                <label>
+                                                    Title<span>*</span>
+                                                    <Form.Select
+                                                        name="title"
+                                                        value={formData.title}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    >
+                                                        <option value="select">Select</option>
+                                                        <option value="Mr.">Mr.</option>
+                                                        <option value="Mrs.">Mrs.</option>
+                                                        <option value="other">Other</option>
+                                                    </Form.Select>
+                                                </label>
+                                                <br />
+                                                <Form.Label>Name<span>*</span></Form.Label>
+                                                <Form.Group style={{ display: 'flex', flexDirection: 'column', width: '150%' }}>
+                                                    <Form.Control
+                                                        type="text"
+                                                        placeholder="Name"
+                                                        name="name"
+                                                        value={formData.name}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    <span style={{ color: 'red' }}>{errors.name}</span>
+                                                    <Form.Label></Form.Label>
+                                                </Form.Group>
+                                                <br />
+                                                <Form.Group style={{ display: 'flex', justifyContent: 'space-between', width: 'auto' }}>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="salutation"
+                                                            value="Son of"
+                                                            checked={formData.salutation === 'Son of'}
+                                                            onChange={handleInputChange}
+                                                            required
+                                                        />
+                                                        Son Of
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            value="Daughter of"
+                                                            checked={formData.salutation === 'Daughter of'}
+                                                            name="salutation"
+                                                            onChange={handleInputChange}
+                                                            required
+                                                        />
+                                                        Daughter Of
+                                                    </label>
+                                                    <label>
+                                                        <input
+                                                            type="radio"
+                                                            name="salutation"
+                                                            value="Wife of"
+                                                            checked={formData.salutation === 'Wife of'}
+                                                            onChange={handleInputChange}
+                                                            required
+                                                        />
+                                                        Wife Of
+                                                    </label>
+                                                </Form.Group>
+                                                <br />
+                                                <Form.Group>
+                                                    <Form.Label>Father/Husband's Name<span>*</span></Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name="FHname"
+                                                        value={formData.FHname}
+                                                        onChange={handleInputChange}
+                                                        required
+                                                    />
+                                                    <span style={{ color: 'red' }}>{errors.FHname}</span>
+                                                </Form.Group>
 
-            <div style={{ border: "2px solid #ccc", padding: '0px 0px 20px 20px' }}>
-                <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
-                <Form onSubmit={handleSubmit}>
-                    <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <Form.Group className="mb-3" >
-                                <label>
-                                    Consumer Type<span>*</span>
-                                    <Form.Select
-                                        name="ConsumerType"
-                                        value={formData.ConsumerType}
-                                        onChange={handleInputChange}
-                                        required
-                                    >
-                                        {CType.map((item, index) => (
-                                            <option key={index} value={item.ct_id}>{item.consumerType}</option>
-                                        ))}
-                                    </Form.Select>
-                                </label>
-                                <br />
-                                {
-                                    selection === '1' && (
-                                        <>
-                                            <label>
-                                                Title<span>*</span>
-                                                <Form.Select
-                                                    name="title"
-                                                    value={formData.title}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                >
-                                                    <option value="select">Select</option>
-                                                    <option value="Mr.">Mr.</option>
-                                                    <option value="Mrs.">Mrs.</option>
-                                                    <option value="other">Other</option>
-                                                </Form.Select>
-                                            </label>
-                                            <br />
-                                            <Form.Label>Name<span>*</span></Form.Label>
-                                            <Form.Group style={{ display: 'flex', flexDirection: 'column', width: '150%' }}>
-                                                <Form.Control
-                                                    type="text"
-                                                    placeholder="Name"
-                                                    name="name"
-                                                    value={formData.name}
-                                                    onChange={handleInputChange}
-                                                    required
-                                                />
-                                                <span style={{ color: 'red' }}>{errors.name}</span>
-                                                <Form.Label></Form.Label>
-                                            </Form.Group>
-                                            <br />
-                                            <Form.Group style={{ display: 'flex', justifyContent: 'space-between', width: 'auto' }}>
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        name="salutation"
-                                                        value="Son of"
-                                                        checked={formData.salutation === 'Son of'}
-                                                        onChange={handleInputChange}
-                                                        required
-                                                    />
-                                                    Son Of
-                                                </label>
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        value="Daughter of"
-                                                        checked={formData.salutation === 'Daughter of'}
-                                                        name="salutation"
-                                                        onChange={handleInputChange}
-                                                        required
-                                                    />
-                                                    Daughter Of
-                                                </label>
-                                                <label>
-                                                    <input
-                                                        type="radio"
-                                                        name="salutation"
-                                                        value="Wife of"
-                                                        checked={formData.salutation === 'Wife of'}
-                                                        onChange={handleInputChange}
-                                                        required
-                                                    />
-                                                    Wife Of
-                                                </label>
-                                            </Form.Group>
+                                            </>
+                                        )}
+                                    {selection === '2' && (
+                                        <div style={{}}>
                                             <br />
                                             <Form.Group>
-                                                <Form.Label>Father/Husband's Name<span>*</span></Form.Label>
+                                                <Form.Label>Firm/Trust/Company/Others Name<span>*</span></Form.Label>
                                                 <Form.Control
                                                     type="text"
-                                                    name="FHname"
-                                                    value={formData.FHname}
+                                                    name="FirmName"
+                                                    value={formData.FirmName}
                                                     onChange={handleInputChange}
                                                     required
                                                 />
-                                                <span style={{ color: 'red' }}>{errors.FHname}</span>
+                                                <Form.Label>Name of Authorized Signatory<span>*</span></Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="Authorname"
+                                                    value={formData.Authorname}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <Form.Label>Designation of Signatory<span>*</span></Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="DesigOfSig"
+                                                    value={formData.DesigOfSig}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <Form.Label>Type of Organization</Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="OrgType"
+                                                    value={formData.OrgType}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                /><Form.Label>Date of Incorporation</Form.Label>
+                                                <Form.Control
+                                                    type="date"
+                                                    name="IncorpDate"
+                                                    value={formData.IncorpDate}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                /><br />
+                                                <Form.Label>GST No.<span>*</span></Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="GSTNo"
+                                                    value={formData.GSTNo}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <span style={{ color: 'red' }}>{errors.GSTNo}</span><br /><br />
+                                                <Form.Label>PAN No.<span>*</span></Form.Label>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="PANNo"
+                                                    value={formData.PANNo}
+                                                    onChange={handleInputChange}
+                                                    required
+                                                />
+                                                <span style={{ color: 'red' }}>{errors.PANNo}</span>
                                             </Form.Group>
-
-                                        </>
-                                    )}
-                                {selection === '2' && (
-                                    <div style={{}}>
-                                        <br />
-                                        <Form.Group>
-                                            <Form.Label>Firm/Trust/Company/Others Name<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="FirmName"
-                                                value={formData.FirmName}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            <Form.Label>Name of Authorized Signatory<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Authorname"
-                                                value={formData.Authorname}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            <Form.Label>Designation of Signatory<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="DesigOfSig"
-                                                value={formData.DesigOfSig}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            <Form.Label>Type of Organization</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="OrgType"
-                                                value={formData.OrgType}
-                                                onChange={handleInputChange}
-                                                required
-                                            /><Form.Label>Date of Incorporation</Form.Label>
-                                            <Form.Control
-                                                type="date"
-                                                name="IncorpDate"
-                                                value={formData.IncorpDate}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            <Form.Label>GST No.<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="GSTNo"
-                                                value={formData.GSTNo}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                            <Form.Label>PAN No.<span>*</span></Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="PANNo"
-                                                value={formData.PANNo}
-                                                onChange={handleInputChange}
-                                                required
-                                            />
-                                        </Form.Group>
-                                    </div>
-                                )}
-                            </Form.Group>
-                        </div>
-                        <div>
-                            <Form.Group>
-                                <Form >
-                                    <div style={{ display: 'block' }}>
-                                        <div style={{ width: "auto" }}>
-                                            <img alt='ok' src="\photo_logo.png" style={{ height: "200px", border: "1px solid grey" }} />
-                                            <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
-                                            <p>Allows only jpg/png files up to 100kb size.</p>
-                                        </div><br />
-                                        <div style={{ width: "auto" }}>
-                                            <img alt='ok' src="\signature.png" style={{ height: "100%", width: "50%", border: "1px solid grey" }} />
-                                            <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
-                                            <p>Allows only jpg/png files up to 50kb size.</p>
                                         </div>
-                                    </div>
-                                </Form>
-                            </Form.Group></div>
-                    </div>
-                    <button type="submit" onClick={handleSaveDraft} style={{ backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
-                    <button type="submit" onClick={handleSubmit} style={{ backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
-                    <br />
+                                    )}
+                                </Form.Group>
+                            </div>
+                            <div>
+                                <Form.Group>
+                                    <Form >
+                                        <div style={{ display: 'block' }}>
+                                            <div style={{ width: "auto" }}>
+                                                <img alt='ok' src="\photo_logo.png" style={{ height: "200px", border: "1px solid grey" }} />
+                                                <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
+                                                <p>Allows only jpg/png files up to 100kb size.</p>
+                                            </div><br />
+                                            <div style={{ width: "auto" }}>
+                                                <img alt='ok' src="\signature.png" style={{ height: "100%", width: "50%", border: "1px solid grey" }} />
+                                                <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
+                                                <p>Allows only jpg/png files up to 50kb size.</p>
+                                            </div>
+                                        </div>
+                                    </Form>
+                                </Form.Group></div>
+                        </div>
+                        <button type="submit" onClick={handleSaveDraft} style={{ backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
+                        <button type="submit" onClick={handleSubmit} style={{ backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
+                        <br />
 
-                    {/* File Uploads */}
+                        {/* File Uploads */}
+                        <br />
+                    </Form>
+                </div><br/>
+                <div style={{ display: 'flex', border: 'solid grey 4px',padding:'10px'}}>
+                    <Address />
+                </div><br/>
+                <div style={{ border: 'solid grey 4px' ,padding:'10px'}}>
+                    <ConnectionDetails />
+                </div>
 
-                </Form>
             </div>
+
         </div >
     );
 };

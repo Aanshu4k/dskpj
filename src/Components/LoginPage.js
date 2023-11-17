@@ -14,15 +14,11 @@ import Logo from './Logo';
 const defaultTheme = createTheme();
 
 const LogIn = (props) => {
-  const generateUuid = () => {
-    const timestamp = new Date().getTime();
-    const uuid = `${timestamp}`;
-    return `${uuid}`;
-  }
+  
   const [loginData, setLoginData] = useState({
     mobileNo: '',
     email: '',
-    uuid: generateUuid(),
+    uuid: props.uuid,
   }, []);
 
   let history = useHistory();
@@ -82,7 +78,7 @@ const LogIn = (props) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            LOGIN
+            SIGN IN
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField

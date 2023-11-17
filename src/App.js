@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import LogIn from './Components/LoginPage';
 import NewConnection from './Components/NewConnection';
 function App() {
+  
   return (
     <Router>
       <div>
