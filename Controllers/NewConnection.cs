@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace ProjectDSK.Controllers;
 
-
 [Route("api/[controller]")]
 [ApiController]
 public class NewConnection : ControllerBase
@@ -56,11 +55,11 @@ public class NewConnection : ControllerBase
 
     }
     [HttpGet(Name = "GetConsumerDetails")]
-    public IEnumerable<ConsumerDetails> Get()
+    public IActionResult GetConsumerDetails()
     {
         string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
 
-        List<ConsumerDetails> ConsumerDetailsList = new List<ConsumerDetails>();
+        List<ConsumerDetails> consumerDetailsList = new List<ConsumerDetails>();
 
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -68,49 +67,60 @@ public class NewConnection : ControllerBase
             {
                 connection.Open();
                 Console.WriteLine("Connected to the MySQL database.");
-   
-                string sqlQuery = "SELECT RequestNo,ConsumerType,title,name,salutation,FHname,FirmName,Authorname,DesigOfSig,OrgType,IncorpDate,GSTNo,PANNo,EntryDate from Cinfo";
-                using (MySqlCommand cmd = new MySqlCommand(sqlQuery, connection))
+                IActionResult requestNoResult = GetRNo();
+                if (requestNoResult is OkObjectResult okResult)
                 {
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    string latestRequestNo = okResult.Value as string;
+                    string sqlQuery = "SELECT RequestNo,uuid, ConsumerType, title, name, salutation, FHname, FirmName, Authorname, DesigOfSig, OrgType, IncorpDate, GSTNo, PANNo, EntryDate FROM cinfo";
+                    using (MySqlCommand cmd = new MySqlCommand(sqlQuery, connection))
                     {
-                        while (reader.Read())
+                        cmd.Parameters.AddWithValue("@LatestRequestNo", latestRequestNo);
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-                            ConsumerDetails ConsumerDetails = new ConsumerDetails
+                            while (reader.Read())
                             {
-                                RequestNo = reader["RequestNo"].ToString(),
-                                ConsumerType = reader["ConsumerType"].ToString(),
-                                Title = reader["Title"].ToString(),
-                                Name = reader["Name"].ToString(),
-                                salutation = reader["salutation"].ToString(),
-                                FHname = reader["FHname"].ToString(),
-                                FirmName = reader["FirmName"].ToString(),
-                                Authorname = reader["Authorname"].ToString(),
-                                DesigOfSig = reader["DesigOfSig"].ToString(),
-                                OrgType = reader["OrgType"].ToString(),
-                                IncorpDate = reader["IncorpDate"].ToString(),
-                                GSTNo = reader["GSTNo"].ToString(),
-                                PANNo = reader["PANNo"].ToString(),
-                                EntryDate = reader["EntryDate"].ToString(),
-                            };
-                                ConsumerDetailsList.Add(ConsumerDetails);
+                                ConsumerDetails consumerDetails = new ConsumerDetails
+                                {
+                                    RequestNo = reader["RequestNo"].ToString(),
+                                    uuid = reader["uuid"].ToString(),
+                                    ConsumerType = reader["ConsumerType"].ToString(),
+                                    Title = reader["title"].ToString(),
+                                    Name = reader["name"].ToString(),
+                                    salutation = reader["salutation"].ToString(),
+                                    FHname = reader["FHname"].ToString(),
+                                    FirmName = reader["FirmName"].ToString(),
+                                    Authorname = reader["Authorname"].ToString(),
+                                    DesigOfSig = reader["DesigOfSig"].ToString(),
+                                    OrgType = reader["OrgType"].ToString(),
+                                    IncorpDate = reader["IncorpDate"].ToString(),
+                                    GSTNo = reader["GSTNo"].ToString(),
+                                    PANNo = reader["PANNo"].ToString(),
+                                    EntryDate = reader["EntryDate"].ToString(),
+                                };
+                                consumerDetailsList.Add(consumerDetails);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    return BadRequest("Error fetching latest RequestNo");
                 }
             }
             catch (MySqlException ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
+                return BadRequest("Unexpected error");
             }
         }
-        return ConsumerDetailsList;
+
+        return Ok(consumerDetailsList);
     }
+
     [HttpGet("GetRNo", Name = "GetRNo")]
     public IActionResult GetRNo()
     {
         string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
-
-        //List<RNo> rn = new List<RNo>();
         RNo rNo = new RNo();
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -158,12 +168,12 @@ public class NewConnection : ControllerBase
             try
             {
                 connection.Open();
-                string query1 = "INSERT INTO cinfo (RequestNo,ConsumerType,Title,name,salutation,fhname,FirmName,Authorname,DesigOfSig,OrgType,IncorpDate,GSTNo,PANNo,EntryDate) " +
-                    "VALUES (@RequestNo,@ConsumerType,@title,@name,@salutation,@fhname,@FirmName,@Authorname,@DesigOfSig,@OrgType,@IncorpDate,@GSTNo,@PANNo,@EntryDate)";
-                //IEnumerable<Ctype_mst> ConsumerType = GetCtype_mst();
+                string query1 = "INSERT IGNORE INTO cinfo (RequestNo,uuid,ConsumerType,Title,name,salutation,fhname,FirmName,Authorname,DesigOfSig,OrgType,IncorpDate,GSTNo,PANNo,EntryDate) " +
+                    "VALUES (@RequestNo,@uuid,@ConsumerType,@title,@name,@salutation,@fhname,@FirmName,@Authorname,@DesigOfSig,@OrgType,@IncorpDate,@GSTNo,@PANNo,@EntryDate)";
                 using (MySqlCommand cmd1 = new MySqlCommand(query1, connection)) 
                 {
                     cmd1.Parameters.AddWithValue("@RequestNo", ud.RequestNo);
+                    cmd1.Parameters.AddWithValue("@uuid", ud.uuid);
                     cmd1.Parameters.AddWithValue("@ConsumerType", ud.ConsumerType);
                     cmd1.Parameters.AddWithValue("@Title", ud.Title);
                     cmd1.Parameters.AddWithValue("@name", ud.Name);
@@ -258,16 +268,16 @@ public class NewConnection : ControllerBase
             try
             {
                 connection.Open();
-                string query = "INSERT INTO cinfo (RequestNo, ConsumerType, Title, name, salutation, FHname, FirmName, Authorname, DesigOfSig, OrgType, IncorpDate, GSTNo, PANNo, EntryDate) " +
-                "VALUES (@RequestNo, @ConsumerType, @Title, @name, @salutation, @FHname, @FirmName, @Authorname, @DesigOfSig, @OrgType, @IncorpDate, @GSTNo, @PANNo, @EntryDate) " +
+                string query = "INSERT INTO cinfo (RequestNo, uuid, ConsumerType, Title, name, salutation, FHname, FirmName, Authorname, DesigOfSig, OrgType, IncorpDate, GSTNo, PANNo, EntryDate) " +
+                "VALUES (@RequestNo, @uuid, @ConsumerType, @Title, @name, @salutation, @FHname, @FirmName, @Authorname, @DesigOfSig, @OrgType, @IncorpDate, @GSTNo, @PANNo, @EntryDate) " +
                 "ON DUPLICATE KEY UPDATE ConsumerType = VALUES(ConsumerType), Title = VALUES(Title), name = VALUES(name), " +
                 "salutation = VALUES(salutation), FHname = VALUES(FHname), FirmName = VALUES(FirmName), Authorname = VALUES(Authorname), " +
                 "DesigOfSig = VALUES(DesigOfSig), OrgType = VALUES(OrgType), IncorpDate = VALUES(IncorpDate), GSTNo = VALUES(GSTNo), PANNo = VALUES(PANNo), EntryDate = VALUES(EntryDate)";
 
-
                 using (MySqlCommand cmd = new MySqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("@RequestNo", draftData.RequestNo);
+                    cmd.Parameters.AddWithValue("@uuid", draftData.uuid);
                     cmd.Parameters.AddWithValue("@ConsumerType", draftData.ConsumerType);
                     cmd.Parameters.AddWithValue("@Title", draftData.Title);
                     cmd.Parameters.AddWithValue("@name", draftData.Name);
@@ -281,8 +291,7 @@ public class NewConnection : ControllerBase
                     cmd.Parameters.AddWithValue("@GSTNo", draftData.GSTNo);
                     cmd.Parameters.AddWithValue("@PANNo", draftData.PANNo);
                     cmd.Parameters.AddWithValue("@EntryDate", draftData.EntryDate);
-                    //cmd.Parameters.AddWithValue("@PANNo", draftData.ImageData);
-                    //cmd.Parameters.AddWithValue("@PANNo", draftData.SignatureData);
+
                     int affectedRows = cmd.ExecuteNonQuery();
 
                     if (affectedRows > 0)
@@ -302,6 +311,7 @@ public class NewConnection : ControllerBase
             }
         }
     }
+
 
     //[HttpPost("PostMyRequest")]
     //public IActionResult PostMyRequest([FromBody] MyRequestData md)
