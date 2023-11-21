@@ -1,7 +1,35 @@
+*{
+    padding: 5px;
+}
 span{
     color:red;
 }
 div.AddressComp{
     display: 'flex';
     border:'solid grey 1px'
+}
+.UserDetails_div{
+    border: solid #ddd 10px; 
+    padding: 10px 10px 0px 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+}
+.Address-div{
+    display: flex;
+    border: solid #ddd 10px; 
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+    padding:5px;
+}
+.ConnectionDetails-div{
+    border: solid #ddd 10px; 
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+    padding:5px;
+}
+.selfdecl-div{
+    border: solid #ddd 10px; 
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgb(0, 0, 0);
+    margin: 10px;
 }

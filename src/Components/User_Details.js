@@ -6,7 +6,9 @@ import Container from 'react-bootstrap/Container';
 import './User_Details.css';
 import Address from './Address';
 import ConnectionDetails from './ConnectionDetails';
-
+import SelfDeclaration from './SelfDeclaration';
+import ImpDocs from './ImportantDocs';
+import DocChecklist from './DocChecklist';
 const User_Details = () => {
 
     const entrydate = () => {
@@ -184,7 +186,7 @@ const User_Details = () => {
             </Navbar>
             <br />
             <div style={{ border: "2px solid #ccc", padding: '10px 10px 20px 10px' }}>
-                <div style={{ border: 'solid grey 4px', padding: '10px 10px 0px 20px' }}>
+                <div className='UserDetails_div' >
                     <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
                     <Form onSubmit={handleSubmit}>
                         <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -378,13 +380,17 @@ const User_Details = () => {
                         <br />
                     </Form>
                 </div><br/>
-                <div style={{ display: 'flex', border: 'solid grey 4px',padding:'10px'}}>
+                <div className='Address-div'>
                     <Address />
                 </div><br/>
-                <div style={{ border: 'solid grey 4px' ,padding:'10px'}}>
+                <div className='ConnectionDetails-div'>
                     <ConnectionDetails />
                 </div>
-
+                <div className='selfdecl-div'>
+                    <SelfDeclaration  name={formData.name} salutation={formData.salutation} fhname={formData.FHname}/>
+                </div>
+                <ImpDocs /><br/>
+                <DocChecklist />
             </div>
 
         </div >

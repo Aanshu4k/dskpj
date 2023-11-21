@@ -33,10 +33,14 @@ function ProductTable() {
     padding: '8px',
     textAlign: 'left',
   };
-
+  const [searchTerm,setSearchTerm]=useState('');
+  const filteredItems=products.filter(prod=>
+    prod.title.toUpperCase().includes(searchTerm.toUpperCase())
+  );
   return (
-    <div>
+    <div style={{margin:'10px', padding:'10px'}}>
       <h1>Product Table</h1>
+      <input placeholder='Search Items...' type='text' value={searchTerm} onChange={(e)=>setSearchTerm(e.target.value)} />
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -54,7 +58,7 @@ function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {filteredItems.map((product) => (
               <tr key={product.id}>
                 <td style={tdStyle}>{product.id}</td>
                 <td style={tdStyle}>{product.title}</td>
