@@ -9,6 +9,7 @@ import ConnectionDetails from './ConnectionDetails';
 import SelfDeclaration from './SelfDeclaration';
 import ImpDocs from './ImportantDocs';
 import DocChecklist from './DocChecklist';
+import Card from 'react-bootstrap/Card';
 const User_Details = () => {
 
     const entrydate = () => {
@@ -187,7 +188,7 @@ const User_Details = () => {
             <br />
             <div style={{ border: "2px solid #ccc", padding: '10px 10px 20px 10px' }}>
                 <div className='UserDetails_div' >
-                    <h3 style={{ textAlign: 'center', padding: "20px", backgroundColor: 'rgb(194, 209, 240) hsl(220, 61%, 85%)' }}><b><u>Consumer Information</u></b></h3>
+                <Card.Title className='title'>CONSUMER INFORMATION</Card.Title>
                     <Form onSubmit={handleSubmit}>
                         <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div>

@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
-
+import Card from 'react-bootstrap/Card';
 const Address = () => {
     const [isSame, setIsSame] = useState(false);
     var [addressFields, setAddressFields] = useState(
@@ -21,9 +21,7 @@ const Address = () => {
 
     return (
         <Form >
-            <div >
-                <h4><strong>Address</strong></h4>
-            </div>
+            <Card.Title className='title'>ADDRESS</Card.Title>
             <Row className="mb-3">
                 <div ><strong>For Communication</strong></div><br />
                 <Form.Group as={Col} md="4" controlId="validationCustom01">

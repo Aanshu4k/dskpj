@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
+import Card from 'react-bootstrap/Card';
 const ConnectionDetails = () => {
     const [userChoice, setUserChoice] = useState('');
     const [userOpt, setUserOpt] = useState('');
@@ -17,9 +18,7 @@ const ConnectionDetails = () => {
 
     return (
         <Form>
-            <div>
-                <h4>Connection details</h4>
-            </div>
+            <Card.Title className='title'>Connection Details</Card.Title>
 
             <div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', width: '14rem' }}>
