@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Routes, Link, Switch } from 'react-rout
 const NewConnection=()=> {  
   return (
     <div className="App" style={{ margin: '20px 10px', alignContent: 'center' }}>
-      <div style={{ display: 'flex', padding: '10px', alignItems: 'center' }}>
+      <div style={{ display: 'flex',marginTop: '-32px', alignItems: 'center' }}>
         <Logo />
         <div>
           <Header />

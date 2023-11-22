@@ -19,7 +19,6 @@ const ConnectionDetails = () => {
     return (
         <Form>
             <Card.Title className='title'>Connection Details</Card.Title>
-
             <div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', width: '14rem' }}>
                     <input

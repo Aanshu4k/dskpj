@@ -1,42 +1,49 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import './ImpDocs.css';
-import { Square } from '@mui/icons-material';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 const ImpDocs = () => {
     return (
         <Card className='Container'>
             <Card.Title className='title'>Important Documents</Card.Title>
             <Card.Body>
                 <Card.Text>
-                    <p className='p-div'>
-                        <h6>Important Note :</h6>
-                        <ul>
-                            <li class="note-point">
-                                For ownership proof - Sale Deed/Conveyance Deed/Allotment Letter/Valid Lease agreement/Mutation certificate issued by Govt authority/sub division agreement/GPA.
-                            </li>
-                            <li class="note-point">
-                                Ensure all pages (front and back side) of the relevant document are uploaded.
-                            </li>
-                            <li class="note-point">
-                                All uploaded documents should be self-attested by applicants(s) on photocopy of original documents.
-                            </li>
-                            <li class="note-point">
+                    <Container>
+                        <p className='p-div'>
+                            <h6>Important Note :</h6>
+                            <ul>
+                                <li class="note-point">
+                                    For ownership proof - Sale Deed/Conveyance Deed/Allotment Letter/Valid Lease agreement/Mutation certificate issued by Govt authority/sub division agreement/GPA.
+                                </li>
+                                <li class="note-point">
+                                    Ensure all pages (front and back side) of the relevant document are uploaded.
+                                </li>
+                                <li class="note-point">
+                                    All uploaded documents should be self-attested by applicants(s) on photocopy of original documents.
+                                </li>
+                                <li class="note-point">
 
-                                All uploaded documents should be clear &amp; readable.
-                            </li>
-                            <li class="note-point">
-                                Uploaded documents should be in Pdf format . Ownership proof document within size limit of 25 MB &amp; other documents within size limit of 5 MB .
-                            </li>
-                        </ul>
-                    </p>
-                    <h6 class="font-weight-bold mb-0 ">
+                                    All uploaded documents should be clear &amp; readable.
+                                </li>
+                                <li class="note-point">
+                                    Uploaded documents should be in Pdf format . Ownership proof document within size limit of 25 MB &amp; other documents within size limit of 5 MB .
+                                </li>
+                            </ul>
+                        </p>
+
+                    </Container>
+                </Card.Text>
+                <Container>
+                    <Card.Text><h6 class="font-weight-bold mb-0 ">
                         <li typeof='square'><i></i> Identification Proof (Self Attested)<span style={{ color: '#6c757d ' }}> (Anyone in PDF Format)</span><span class="text-danger">*</span>
                         </li>
                     </h6>
-                </Card.Text>
-                <Card.Text>
-                    <div style={{display:'flex'}}>
-                        <div >
+                    </Card.Text>
+                    <Row>
+                        {/* <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '-15px' }}> */}
+                        <Col xs={6} md={4}>
                             <label>ID Proof Type </label><br />
                             <select>
                                 <option class="" value="">
@@ -64,24 +71,26 @@ const ImpDocs = () => {
                                     Ration Card having Photograph
                                 </option>
                             </select>
-                        </div>
-                        <div>
+                        </Col>
+                        <Col xs={6} md={4}>
                             <label>ID Proof Doc No. </label><span>*</span><br />
                             <input type='text' />
-                        </div>
-                        <div>
-                            <button type="button" style={{}}>Upload File</button>
-                        </div>
-                    </div>
-                </Card.Text>
+                        </Col>
+                        <Col xs={6} md={4}>
+                            <input type="file" id='ID-proof-btn' /><br />Upload File
+                        </Col>
+                    </Row>
+                    {/* </div> */}
+                </Container>
                 <Card.Text>
                     <h6 class="font-weight-bold mb-0 ">
                         <li typeof='square'><i></i> Ownership Proof (Self Attested)<span style={{ color: '#6c757d ' }}> (Anyone in PDF Format)</span><span class="text-danger">*</span>
                         </li>
                     </h6>
                 </Card.Text>
-                <Card.Text style={{ display: 'flex', justifyItems: 'flex-start' }}>
-                    <div>
+                <Container>
+                    <Row>
+                    <Col>
                         <select >
                             <option class="" value="">
                                 -Select-
@@ -105,11 +114,12 @@ const ImpDocs = () => {
                                 GPA (Last 5 Years Chain)
                             </option>
                         </select>
-                    </div>
-                    <div>
-                        <button type="button">Upload File</button>
-                    </div>
-                </Card.Text>
+                    </Col>
+                    <Col>
+                        <input type="file" /><br />Upload File
+                    </Col>
+                    </Row>
+                </Container>
             </Card.Body>
         </Card>
     );

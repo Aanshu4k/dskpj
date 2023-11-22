@@ -55,7 +55,7 @@ const User_Details = () => {
         SignatureData: 'null',
         EntryDate: entrydate(),
     }, []);
-    const [CType, setCType] = useState([]);
+    const [CType, setCType] = useState(['']);
     const [selection, setSelection] = useState('1')
     const [RNo, setRNo] = useState('');
     useEffect(() => {
@@ -103,12 +103,10 @@ const User_Details = () => {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
-        // console.log(event.target.value);
         if (name === 'ConsumerType') {
             setSelection(value);
         }
         setFormData({ ...formData, [name]: value });
-        // setCType({ ...CType, [name]: value });
         validateInput();
     };
     const validateInput = () => {
@@ -188,7 +186,7 @@ const User_Details = () => {
             <br />
             <div style={{ border: "2px solid #ccc", padding: '10px 10px 20px 10px' }}>
                 <div className='UserDetails_div' >
-                <Card.Title className='title'>CONSUMER INFORMATION</Card.Title>
+                    <Card.Title className='title'>CONSUMER INFORMATION</Card.Title>
                     <Form onSubmit={handleSubmit}>
                         <div className="mb-3" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div>
@@ -361,36 +359,37 @@ const User_Details = () => {
                                         <div style={{ display: 'block' }}>
                                             <div style={{ width: "auto" }}>
                                                 <img alt='ok' src="\photo_logo.png" style={{ height: "200px", border: "1px solid grey" }} />
-                                                <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
-                                                <p>Allows only jpg/png files up to 100kb size.</p>
+                                                <input class="custom-file-input" type="file" style={{ marginRight: '45%', marginTop: '-66%' }} /><br />Upload File
+                                                <label>Allows only jpg/png files up to 100kb size.</label>
+
                                             </div><br />
                                             <div style={{ width: "auto" }}>
                                                 <img alt='ok' src="\signature.png" style={{ height: "100%", width: "50%", border: "1px solid grey" }} />
-                                                <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} />Upload File
-                                                <p>Allows only jpg/png files up to 50kb size.</p>
+                                                <input type="file" style={{ marginRight: '45%', marginTop: '-66%' }} /><br />Upload File
+                                                <label for='upload'>Allows only jpg/png files up to 50kb size.</label>
                                             </div>
                                         </div>
                                     </Form>
                                 </Form.Group></div>
                         </div>
-                        <button type="submit" onClick={handleSaveDraft} style={{ backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
-                        <button type="submit" onClick={handleSubmit} style={{ backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
+                        <button type="submit" onClick={handleSaveDraft} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
+                        {' '}
+                        <button type="submit" onClick={handleSubmit} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
                         <br />
-
                         {/* File Uploads */}
                         <br />
                     </Form>
-                </div><br/>
+                </div><br />
                 <div className='Address-div'>
                     <Address />
-                </div><br/>
+                </div><br />
                 <div className='ConnectionDetails-div'>
                     <ConnectionDetails />
                 </div>
                 <div className='selfdecl-div'>
-                    <SelfDeclaration  name={formData.name} salutation={formData.salutation} fhname={formData.FHname}/>
+                    <SelfDeclaration name={formData.name} salutation={formData.salutation} fhname={formData.FHname} />
                 </div>
-                <ImpDocs /><br/>
+                <ImpDocs /><br />
                 <DocChecklist />
             </div>
 
