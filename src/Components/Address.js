@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
+import React, { useState, useEffect } from "react";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -7,33 +6,93 @@ import Card from "react-bootstrap/Card";
 
 const Address = () => {
   const [isSame, setIsSame] = useState(false);
+  const [floorData, setFloorData] = useState([]);
   var [addressFields, setAddressFields] = useState({
-    Hno: "",
+    hNo: "",
     floor: "",
-    bName: "",
+    buildName: "",
     street: "",
     area: "",
-    lm: "",
-    lmDetails: "",
-    psCode: "",
-  });
+    landmarkDetails: "",
+    cityPostalCode: "",
+    nearLoc: "",
+    division: "",
+    landmarkIndicate: ""
+  }, []);
   var [supplyAddressFields, setSupplyAddressFields] = useState({
-    Hno: "",
+    hNo: "",
     floor: "",
-    bName: "",
+    buildName: "",
     street: "",
     area: "",
-    lm: "",
-    lmDetails: "",
-    psCode: "",
-  });
+    landmarkDetails: "",
+    cityPostalCode: "",
+    nearLoc: "",
+    division: "",
+    landmarkIndicate: ""
+  },[]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5228/api/Address/Get_floor_mst');
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        setFloorData(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+    fetchData();
+  }, []); // The empty dependency array ensures that useEffect runs only once on component mount
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch('http://localhost:5228/api/Address', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(addressFields),
+      });
+
+      if (response.ok) {
+        alert('User Address Details Saved Successfully');
+      } else {
+        console.error('Error saving information');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    try {
+      const response = await fetch('http://localhost:5228/api/Address', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(addressFields),
+      });
+
+      if (response.ok) {
+        alert('User Address Details Saved Successfully');
+      } else {
+        console.error('Error saving information');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const handleChange = () => {
     setIsSame(!isSame);
   };
-  const handleInputChange = (e) => {
-    setAddressFields(e.target.value);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setAddressFields({ ...addressFields, [name]: value });
   };
+
   return (
     <Form>
       <Card.Title className="title">ADDRESS</Card.Title>
@@ -45,10 +104,10 @@ const Address = () => {
         <Form.Group as={Col} md="4" controlId="validationCustom01">
           <Form.Label>House No./Property No.</Form.Label>
           <Form.Control
-            name="HNo"
+            name="hNo"
             required
             type="text"
-            value={addressFields.Hno}
+            value={addressFields.hNo}
             onChange={handleInputChange}
           />
         </Form.Group>
@@ -58,35 +117,35 @@ const Address = () => {
           <select
             name="floor"
             style={{ width: "50%" }}
+            value={addressFields.floor}
             onChange={handleInputChange}
           >
-            <option value="option1">Ground</option>
-            <option value="option2">Basement</option>
-            <option value="option3">Floor 1</option>
-            <option value="option4">Floor 2</option>
-            <option value="option5">Floor 3</option>
-            <option value="option6">Floor 4</option>
+            {floorData.map((floorData) => (
+            <option key={floorData.floor_id} value={floorData.floor}>
+              {floorData.floor}
+            </option>
+          ))}
           </select>
         </Form.Group>
         <Form.Group as={Col} md="3">
           <Form.Label>Building Name</Form.Label>
-          <Form.Control required type="text" />
+          <Form.Control name='buildName' required type="text" value={addressFields.buildName} onChange={handleInputChange} />
         </Form.Group>
         <Form.Group as={Col} md="4">
           <Form.Label>Street</Form.Label>
-          <Form.Control required type="text" />
+          <Form.Control name='street' required type="text" value={addressFields.street} onChange={handleInputChange} />
         </Form.Group>
         <Form.Group as={Col} md="4">
           <Form.Label>Colony Area</Form.Label>
-          <Form.Control required type="text" />
+          <Form.Control name='area' required type="text" value={addressFields.area} onChange={handleInputChange} />
         </Form.Group>
         <Form.Group as={Col} md="3">
           <Form.Label>Landmark Details</Form.Label>
-          <Form.Control required type="text" />
+          <Form.Control name='landmarkDetails' required type="text" value={addressFields.landmarkDetails} onChange={handleInputChange} />
         </Form.Group>
         <Form.Group as={Col} md="4">
           <Form.Label>City Postal Code</Form.Label>
-          <Form.Control required type="text" />
+          <Form.Control name='cityPostalCode' required type="text" value={addressFields.cityPostalCode} onChange={handleInputChange} />
         </Form.Group>
       </Row>
 
@@ -98,13 +157,16 @@ const Address = () => {
           <Form.Label required>Nearby Locality</Form.Label>
           <Form.Control
             required
+            name='nearLoc'
             type="text"
             placeholder="Type your locality name here"
+            value={addressFields.nearLoc}
+            onChange={handleInputChange}
           />
         </Form.Group>
         <Form.Group as={Col} md="4">
           <Form.Label>Division</Form.Label>
-          <Form.Control type="text" placeholder="" />
+          <Form.Control name='division' type="text" placeholder="" value={addressFields.division} onChange={handleInputChange} />
         </Form.Group>
       </Row>
       <label>
@@ -126,21 +188,21 @@ const Address = () => {
               type="text"
               placeholder=""
               disabled={isSame}
-              name="HNo"
-              onChange={handleInputChange}
-              value={supplyAddressFields.Hno}
+              name="hNo"
+              onChange={(e) => setSupplyAddressFields(e.target.value)}
+              value={supplyAddressFields.hNo}
             />
           </Form.Group>
           <Form.Group as={Col} md="4" controlId="validationCustom02">
             <Form.Label>Floor</Form.Label>
             <br />
             <select name="Floor" style={{ width: "50%" }} disabled={isSame}>
-              <option value="option1">Ground</option>
-              <option value="option2">Basement</option>
-              <option value="option3">Floor 1</option>
-              <option value="option4">Floor 2</option>
-              <option value="option5">Floor 3</option>
-              <option value="option6">Floor 4</option>
+              <option value="Ground">Ground</option>
+              <option value="Basement">Basement</option>
+              <option value="Floor 1">Floor 1</option>
+              <option value="Floor 2">Floor 2</option>
+              <option value="Floor 3">Floor 3</option>
+              <option value="Floor 4">Floor 4</option>
             </select>
           </Form.Group>
           <Form.Group as={Col} md="3">
@@ -196,9 +258,14 @@ const Address = () => {
       </div>
       <Form.Group as={Col} md="4">
         <Form.Label>Pole No./Feeder Pillar No./Nearest House No.</Form.Label>
-        <Form.Control type="text" placeholder="" />
+        <Form.Control name='landmarkIndicate' type="text" placeholder="" value={addressFields.landmarkIndicate} onChange={handleInputChange} />
+      </Form.Group>
+      <Form.Group as={Col} md='4'>
+        <button type="submit" className='submit-btn' onClick={handleSubmit} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
+        <br />
       </Form.Group>
     </Form>
+
   );
 };
 

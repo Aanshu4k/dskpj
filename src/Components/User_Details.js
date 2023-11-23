@@ -25,7 +25,7 @@ const User_Details = () => {
     const [formData, setFormData] = useState({
         uuid: generateUUID(),
         RequestNo: '',
-        ConsumerType: '',
+        ConsumerType: '1',
         title: '',
         name: '',
         salutation: '',
@@ -58,6 +58,7 @@ const User_Details = () => {
     const [CType, setCType] = useState(['']);
     const [selection, setSelection] = useState('1')
     const [RNo, setRNo] = useState('');
+    const [titleData, setTitleData] = useState([]);
     useEffect(() => {
         fetch('http://localhost:5228/api/NewConnection/Get_Ctype_mst')
             .then(response => response.json())
@@ -66,10 +67,7 @@ const User_Details = () => {
                 setCType(data);
             })
             .catch((error) => console.error('Error fetching data:', error));
-    }, []);
-    //To fetch requestNo from the get api 
-    useEffect(() => {
-        //debugger;
+
         fetch('http://localhost:5228/api/NewConnection/GetRNo')
             .then(response => response.json())
             .then((data) => {
@@ -77,6 +75,20 @@ const User_Details = () => {
                 setRNo(data);
             })
             .catch((error) => console.error('Error fetching data:', error));
+
+        const fetchtitleData = async () => {
+            try {
+                const response = await fetch('http://localhost:5228/api/NewConnection/Get_title_mst');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                const titleData = await response.json();
+                setTitleData(titleData);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        fetchtitleData();
     }, []);
     const handleSaveDraft = async (event) => {
         event.preventDefault();
@@ -216,10 +228,9 @@ const User_Details = () => {
                                                         onChange={handleInputChange}
                                                         required
                                                     >
-                                                        <option value="select">Select</option>
-                                                        <option value="Mr.">Mr.</option>
-                                                        <option value="Mrs.">Mrs.</option>
-                                                        <option value="other">Other</option>
+                                                        {titleData.map((tData) => (
+                                                            <option key={tData.title_id} value={tData.title}>{tData.title}</option>
+                                                        ))}
                                                     </Form.Select>
                                                 </label>
                                                 <br />
@@ -372,9 +383,9 @@ const User_Details = () => {
                                     </Form>
                                 </Form.Group></div>
                         </div>
-                        <button type="submit" onClick={handleSaveDraft} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
+                        <button type="submit" className='Save-btn' onClick={handleSaveDraft} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'yellow', color: 'black', width: '20%' }}><b>Save as Draft</b></button>
                         {' '}
-                        <button type="submit" onClick={handleSubmit} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
+                        <button type="submit" className='submit-btn' onClick={handleSubmit} style={{ border: 'solid #ddd 2px', borderRadius: '50px', boxShadow: '0 0 5px rgb(0, 0, 0)', backgroundColor: 'red', color: 'white', width: '20%' }}><b>SUBMIT</b></button>
                         <br />
                         {/* File Uploads */}
                         <br />
