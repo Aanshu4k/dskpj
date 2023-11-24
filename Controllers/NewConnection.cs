@@ -12,48 +12,80 @@ namespace ProjectDSK.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class NewConnection : ControllerBase
 {
-    [HttpGet("Get_Ctype_mst",Name = "Get_Ctype_mst")]
+    [HttpGet("Get_Ctype_mst", Name = "Get_Ctype_mst")]
     public IActionResult GetCtype_mst()
     {
-        string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
-        List<Ctype_mst> ctypeList = new List<Ctype_mst>();
-        //List<Ctype_mst> MasterData = new List<Ctype_mst>();
-
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        try
         {
-            try
+            string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                Console.WriteLine("Connected to the MySQL database.");
-                string sqlQuery = "SELECT * FROM ctype_mst";
-                using (MySqlCommand cmd = new MySqlCommand(sqlQuery, connection))
+                string query = "SELECT * FROM ctype_mst";
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
                 {
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
+                        var ctypeList = new List<Ctype_mst>();
                         while (reader.Read())
                         {
                             Ctype_mst md = new Ctype_mst();
-                            md.ConsumerType = reader["ConsumerType"].ToString();
-                            md.Ct_id = Convert.ToInt32(reader["Ct_id"].ToString());
+                            {
+                                md.ConsumerType = reader["ConsumerType"].ToString();
+                                md.Ct_id = Convert.ToInt32(reader["Ct_id"].ToString());
+                            };
                             ctypeList.Add(md);
                         }
-                        
+                        return Ok(ctypeList);
                     }
-                    
                 }
-                return Ok(ctypeList);
-            }
-            catch (MySqlException ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-                return BadRequest("Unexpected error");
             }
         }
-        
-
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error: {ex.Message}");
+        }
     }
+    [HttpGet("Get_title_mst", Name = "Get_title_mst")]
+    public IActionResult Get_title_mst()
+    {
+        try
+        {
+            string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM title_mst";
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                {
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        var titleArray = new List<object>();
+                        while (reader.Read())
+                        {
+                            //object declare to define our data items id,title 
+                            var titleObject = new
+                            {
+                                title_id = Convert.ToInt32(reader["title_id"]),
+                                title = reader["title"].ToString(),
+                            };
+                            titleArray.Add(titleObject);
+                        }
+                        return Ok(titleArray);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error: {ex.Message}");
+        }
+    }
+
+
     [HttpGet(Name = "GetConsumerDetails")]
     public IActionResult GetConsumerDetails()
     {
@@ -312,7 +344,57 @@ public class NewConnection : ControllerBase
         }
     }
 
+    [HttpPost("UploadImage")]
+    public async Task<IActionResult> UploadImage(IFormFile photo, IFormFile signature)
+    {
+        if (photo == null || signature == null)
+        {
+            return BadRequest("Invalid Data Received.");
+        }
 
+        try
+        {
+            byte[] photoData;
+            byte[] signatureData;
+
+            using (MemoryStream photoStream = new MemoryStream())
+            using (MemoryStream signatureStream = new MemoryStream())
+            {
+                await photo.CopyToAsync(photoStream);
+                await signature.CopyToAsync(signatureStream);
+                photoData = photoStream.ToArray();
+                signatureData = signatureStream.ToArray();
+            }
+
+            string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "INSERT INTO cinfo (PhotoData, SignatureData) VALUES (@photoData, @signatureData)";
+
+                using (MySqlCommand cmd = new MySqlCommand(query, connection))
+                {
+                    cmd.Parameters.Add("@photoData", MySqlDbType.Blob).Value = photoData;
+                    cmd.Parameters.Add("@signatureData", MySqlDbType.Blob).Value = signatureData;
+                    int affectedRows = cmd.ExecuteNonQuery();
+
+                    if (affectedRows > 0)
+                    {
+                        return Ok("Images uploaded successfully.");
+                    }
+                    else
+                    {
+                        return StatusCode(500, "Failed to upload images.");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Failed to upload images.");
+        }
+    }
     //[HttpPost("PostMyRequest")]
     //public IActionResult PostMyRequest([FromBody] MyRequestData md)
     //{
@@ -363,57 +445,7 @@ public class NewConnection : ControllerBase
     //}
 
 
-    //[HttpPost("UploadImage")]
-    //public async Task<IActionResult> UploadImage(IFormFile photo, IFormFile signature)
-    //{
-    //    if (photo == null || signature == null)
-    //    {
-    //        return BadRequest("Invalid Data Received.");
-    //    }
 
-    //    try
-    //    {
-    //        byte[] photoData;
-    //        byte[] signatureData;
-
-    //        using (MemoryStream photoStream = new MemoryStream())
-    //        using (MemoryStream signatureStream = new MemoryStream())
-    //        {
-    //            await photo.CopyToAsync(photoStream);
-    //            await signature.CopyToAsync(signatureStream);
-    //            photoData = photoStream.ToArray();
-    //            signatureData = signatureStream.ToArray();
-    //        }
-
-    //        string connectionString = "Server=localhost;User=root;Password=Aanshu30;Database=dsk";
-    //        using (MySqlConnection connection = new MySqlConnection(connectionString))
-    //        {
-    //            connection.Open();
-
-    //            string query = "INSERT INTO cinfo (PhotoData, SignatureData) VALUES (@photoData, @signatureData)";
-
-    //            using (MySqlCommand cmd = new MySqlCommand(query, connection))
-    //            {
-    //                cmd.Parameters.Add("@photoData", MySqlDbType.Blob).Value = photoData;
-    //                cmd.Parameters.Add("@signatureData", MySqlDbType.Blob).Value = signatureData;
-    //                int affectedRows = cmd.ExecuteNonQuery();
-
-    //                if (affectedRows > 0)
-    //                {
-    //                    return Ok("Images uploaded successfully.");
-    //                }
-    //                else
-    //                {
-    //                    return StatusCode(500, "Failed to upload images.");
-    //                }
-    //            }
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return StatusCode(500, "Failed to upload images.");
-    //    }
-    //}
 
 
 }
