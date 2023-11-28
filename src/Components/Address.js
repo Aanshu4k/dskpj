@@ -30,7 +30,7 @@ const Address = () => {
     nearLoc: "",
     division: "",
     landmarkIndicate: ""
-  },[]);
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,7 +50,7 @@ const Address = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch('http://localhost:5228/api/Address', {
+      const response = await fetch('http://localhost:5228/api/Address/PostAddressDetails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,12 +67,12 @@ const Address = () => {
       console.error('Error:', error);
     }
     try {
-      const response = await fetch('http://localhost:5228/api/Address', {
+      const response = await fetch('http://localhost:5228/api/Address/PostSupplyAddressDetails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(addressFields),
+        body: JSON.stringify(supplyAddressFields),
       });
 
       if (response.ok) {
@@ -85,14 +85,18 @@ const Address = () => {
     }
   };
 
-  const handleChange = () => {
+  const handleChange = (e) => {
     setIsSame(!isSame);
+  };
+  const handleInputChange2 = (e) => {
+    const { name, value } = e.target;
+    setSupplyAddressFields({ ...supplyAddressFields, [name]: value });
   };
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setAddressFields({ ...addressFields, [name]: value });
-  };
 
+  };
   return (
     <Form>
       <Card.Title className="title">ADDRESS</Card.Title>
@@ -121,10 +125,10 @@ const Address = () => {
             onChange={handleInputChange}
           >
             {floorData.map((floorData) => (
-            <option key={floorData.floor_id} value={floorData.floor}>
-              {floorData.floor}
-            </option>
-          ))}
+              <option key={floorData.floor_id} value={floorData.floor}>
+                {floorData.floor}
+              </option>
+            ))}
           </select>
         </Form.Group>
         <Form.Group as={Col} md="3">
@@ -189,14 +193,14 @@ const Address = () => {
               placeholder=""
               disabled={isSame}
               name="hNo"
-              onChange={(e) => setSupplyAddressFields(e.target.value)}
               value={supplyAddressFields.hNo}
+              onChange={handleInputChange2}
             />
           </Form.Group>
           <Form.Group as={Col} md="4" controlId="validationCustom02">
             <Form.Label>Floor</Form.Label>
             <br />
-            <select name="Floor" style={{ width: "50%" }} disabled={isSame}>
+            <select name="floor" value={supplyAddressFields.floor} onChange={handleInputChange2} style={{ width: "50%" }} disabled={isSame}>
               <option value="Ground">Ground</option>
               <option value="Basement">Basement</option>
               <option value="Floor 1">Floor 1</option>
@@ -210,7 +214,10 @@ const Address = () => {
             <Form.Control
               required
               type="text"
+              name='buildName'
               placeholder=""
+              value={supplyAddressFields.buildName}
+              onChange={handleInputChange2}
               disabled={isSame}
             />
           </Form.Group>
@@ -219,6 +226,9 @@ const Address = () => {
             <Form.Control
               required
               type="text"
+              name='street'
+              value={supplyAddressFields.street}
+              onChange={handleInputChange2}
               placeholder=""
               disabled={isSame}
             />
@@ -228,6 +238,9 @@ const Address = () => {
             <Form.Control
               required
               type="text"
+              name='area'
+              value={supplyAddressFields.area}
+              onChange={handleInputChange2}
               placeholder=""
               disabled={isSame}
             />
@@ -237,6 +250,9 @@ const Address = () => {
             <Form.Control
               required
               type="text"
+              name='landmarkDetails'
+              value={supplyAddressFields.landmarkDetails}
+              onChange={handleInputChange2}
               placeholder=""
               disabled={isSame}
             />
@@ -246,6 +262,9 @@ const Address = () => {
             <Form.Control
               required
               type="text"
+              name='cityPostalCode'
+              value={supplyAddressFields.cityPostalCode}
+              onChange={handleInputChange2}
               placeholder=""
               disabled={isSame}
             />

@@ -14,7 +14,7 @@ import Logo from './Logo';
 const defaultTheme = createTheme();
 
 const LogIn = (props) => {
-  
+
   const [loginData, setLoginData] = useState({
     mobileNo: '',
     email: '',
@@ -43,7 +43,7 @@ const LogIn = (props) => {
     //     if (response.ok) {
     //       alert('Login Successfull');
     //       console.log('Login Data submitted successfully');
-          
+
     //     } else {
     //       console.error('Error submitting data. Response Status: ' + response.status);
     //       const responseText = await response.text();
