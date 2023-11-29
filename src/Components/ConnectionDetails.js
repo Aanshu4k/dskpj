@@ -1,16 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 const ConnectionDetails = () => {
-    const [userChoice, setUserChoice] = useState('');
-    const [userOpt, setUserOpt] = useState('');
+    // const [userChoice, setUserChoice] = useState('');
+    // const [userOpt, setUserOpt] = useState('');
+    const [usageCateg, setUsageCateg] = useState([]);
+    const [buildingType, setBuildingType] = useState([]);
+    const [selection, setSelection] = useState('');
     const [connData, setConnData] = useState({
         type: 'Permanent',
         UsageCat: '',
-        Load_KVA: '',
+        Load_KVA: '-',
         Load_KW: '',
         purpose: '',
         AreaType: '',
@@ -18,24 +22,51 @@ const ConnectionDetails = () => {
         BuildingType: '',
         UPIC_check: '',
         UPIC_num: '',
-        FromDate: '',
-        ToDate: '',
+        FromDate: '-',
+        ToDate: '-',
     }, []);
-
-    const handleChoiceChange = (e) => {
-        setUserOpt(e.target.value);
-        connData.type = userOpt;
-    };
-    const handleUPICchange = (e) => {
-        setUserChoice(e.target.value);
-    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('http://localhost:5228/api/ConnectionDetails/Get_electricityusagecategory_mst');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Data');
+                }
+                const data = await response.json();
+                setUsageCateg(data);
+            }
+            catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        const fetchData2 = async () => {
+            try {
+                const response = await fetch('http://localhost:5228/api/ConnectionDetails/Get_buildingtype_mst');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Data');
+                }
+                const data = await response.json();
+                setBuildingType(data);
+            }
+            catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        fetchData();
+        fetchData2();
+    }, [])
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'Load_KVA') {
+        if (name === 'UsageCat') {
+            setSelection(value);
+            setConnData({ ...connData, [name]: value });
+        }
+        else if (name === 'Load_KVA') {
             const loadKVA = parseFloat(value);
             const loadKW = isNaN(loadKVA) ? '' : (0.93 * loadKVA).toFixed(2);
             setConnData({ ...connData, Load_KVA: value, Load_KW: loadKW });
-        } else {
+        }
+        else {
             setConnData({ ...connData, [name]: value });
         }
     }
@@ -95,61 +126,65 @@ const ConnectionDetails = () => {
                     <Form.Group as={Col} md="4" controlId="validationCustom02">
                         <Form.Label>Category of electricity usage <span>*</span></Form.Label>
                         <br />
-                        <select class="Category of electricity usage" name='UsageCat' value={connData.UsageCat} onChange={handleInputChange}>
-                            <option value="">-Select-</option>
-                            <option value="0100">Domestic</option>
-                            <option value="0290">Non Domestic</option>
-                            <option value="0320">Industrial</option>
-                            <option value="0250">Agriculture</option>
-                            <option value="0280">Mushrooms</option>
-                            <option value="0600">Public Utility</option>
-                            <option value="0700">Charging Station e-Vehicles</option>
-                            <option value="0800">DJB</option>
-                            <option value="0900">DIAL</option>
-                            <option value="0910">DMRC</option>
-                            <option value="0920">Railway Traction</option>
-                            <option value="0930">Advertising</option>
-                        </select>
+                        <Form.Select class="Category of electricity usage" name='UsageCat' value={connData.UsageCat} onChange={handleInputChange}>
+                            {usageCateg.map((cat) => (
+                                <option key={cat.cat_id} value={cat.category_name}>{cat.category_name}</option>
+                            ))}
+                        </Form.Select>
                     </Form.Group>
-                    <div style={{ display: 'flex' }}>
-                        <Form.Group as={Col} md="4" >
-                            <Form.Label>Load (KVA) (1 KVA = 0.93 KW)<span>*</span></Form.Label>
-                            <Form.Control required type="text" name='Load_KVA' value={connData.Load_KVA} onChange={handleInputChange} />
-                        </Form.Group>
-                        <Form.Group as={Col} md="4" >
-                            <Form.Label>Load (KW) <span>*</span></Form.Label>
-                            <Form.Control disabled required type="text" name='Load_KW' value={connData.Load_KW} onChange={handleInputChange} />
-                        </Form.Group>
-                        <Form.Group as={Col} md="4" >
-                            <Form.Label>Purpose of Supply</Form.Label>
-                            <Form.Control required type="text" name='purpose' value={connData.purpose} onChange={handleInputChange} />
-                        </Form.Group></div>
+                    <div style={{ display: 'inline' }}>
+                        {selection !== 'Domestic' && (
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <Form.Group as={Col} md="4">
+                                    <Form.Label>Load (KVA) (1 KVA = 0.93 KW)<span>*</span></Form.Label>
+                                    <Form.Control required type="number" name='Load_KVA' value={connData.Load_KVA} onChange={handleInputChange} />
+                                </Form.Group>
+                                <Form.Group as={Col} md="4">
+                                    <Form.Label>Load (KW) <span>*</span></Form.Label><br />
+                                    <Form.Control disabled required type="number" name='Load_KW' value={connData.Load_KW} onChange={handleInputChange} />
+                                </Form.Group>
+                                <Form.Group as={Col} md="4" >
+                                    <Form.Label>Purpose of Supply</Form.Label>
+                                    <Form.Control required type="text" name='purpose' value={connData.purpose} onChange={handleInputChange} />
+                                </Form.Group>
+                            </div>
+                        )}
+                        {selection === 'Domestic' && (
+                            <div style={{ display: 'flex' }}>
+                                <Form.Group as={Col} md="2">
+                                    <Form.Label>Load (KW) <span>*</span></Form.Label>
+                                    <Form.Control required type="number" name='Load_KW' value={connData.Load_KW} onChange={handleInputChange} />
+                                </Form.Group>{" "}
+                                <Form.Group as={Col} md="2" >
+                                    <Form.Label>Purpose of Supply</Form.Label>
+                                    <Form.Control required type="text" name='purpose' value={connData.purpose} onChange={handleInputChange} />
+                                </Form.Group>
+                            </div>
+                        )}
+                    </div>
                     <div style={{ display: 'flex' }}>
                         <Form.Group as={Col} md="4" >
                             <Form.Label>Type of Area<span>*</span></Form.Label><br />
                             <select class="Category of electricity usage" name='AreaType' value={connData.AreaType} onChange={handleInputChange}>
-                                <option value="">-Select-</option>
-                                <option value="1">-JJ Clusters-</option>
-                                <option value="2">Others</option>
+                                <option value="-Select-">-Select-</option>
+                                <option value="JJ Clusters">JJ Clusters</option>
+                                <option value="Others">Others</option>
                             </select>
                         </Form.Group>
                         <Form.Group as={Col} md="4" >
                             <Form.Label>Type of Premises<span>*</span> </Form.Label><br />
                             <select name='PremisesType' value={connData.PremisesType} onChange={handleInputChange}>
-                                <option value="">-Select-</option>
-                                <option value="1">-JJ Clusters-</option>
-                                <option value="2">Others</option>
+                                <option value="-Select-">-Select-</option>
+                                <option value="JJ Clusters">JJ Clusters</option>
+                                <option value="Others">Others</option>
                             </select>
                         </Form.Group>
                         <Form.Group as={Col} md="4" >
                             <Form.Label>Type of Use/Building <span>*</span> </Form.Label><br />
                             <select name='BuildingType' value={connData.BuildingType} onChange={handleInputChange} >
-                                <option value="">-Select-</option>
-                                <option value="1">-Residential Building-</option>
-                                <option value="2">Hotel/Guest House</option>
-                                <option value="3">Instiutional Building</option>
-                                <option value="4">Business building</option>
-                                <option value="5">Others</option>
+                                {buildingType.map((type) => (
+                                    <option key={type.id} value={type.name}>{type.name}</option>
+                                ))}
                             </select>
                         </Form.Group>
                     </div><br />
@@ -160,17 +195,17 @@ const ConnectionDetails = () => {
                             <div className='UPIC-div'>
                                 <input
                                     type="radio"
-                                    name='UPIC_check' value='yes' onChange={handleUPICchange}
+                                    name='UPIC_check' value='yes' checked={connData.UPIC_check === 'yes'} onChange={handleInputChange}
                                 />
-                                Yes
+                                Yes{" "}
                                 <input
                                     type="radio"
-                                    name='UPIC_check' value='no' onChange={handleUPICchange}
+                                    name='UPIC_check' value='no' checked={connData.UPIC_check === 'no'} onChange={handleInputChange}
                                 />
                                 No
                             </div>
                         </Form.Group>
-                        {userChoice === 'yes' && (
+                        {connData.UPIC_check === 'yes' && (
                             <Form.Group md="4">
                                 <Form.Label>UPIC No.<span>*</span></Form.Label><br />
                                 <input type="text" name='UPIC_num' value={connData.UPIC_num} onChange={handleInputChange} placeholder="Enter EPIC No" />

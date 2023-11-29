@@ -10,8 +10,8 @@ import SelfDeclaration from './SelfDeclaration';
 import ImpDocs from './ImportantDocs';
 import DocChecklist from './DocChecklist';
 import Card from 'react-bootstrap/Card';
+import { useContext } from 'react';
 const User_Details = () => {
-
     const entrydate = () => {
         const date = new Date();
         const entryDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -115,11 +115,12 @@ const User_Details = () => {
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
+        validateInput();
         if (name === 'ConsumerType') {
             setSelection(value);
         }
         setFormData({ ...formData, [name]: value });
-        validateInput();
+
     };
     const validateInput = () => {
         const { name, FHname, GSTNo, PANNo } = formData;
@@ -391,8 +392,9 @@ const User_Details = () => {
                         <br />
                     </Form>
                 </div><br />
+
                 <div className='Address-div'>
-                    <Address />
+                    <Address requestNo={formData.RequestNo} />
                 </div><br />
                 <div className='ConnectionDetails-div'>
                     <ConnectionDetails />
@@ -402,6 +404,8 @@ const User_Details = () => {
                 </div>
                 <ImpDocs /><br />
                 <DocChecklist />
+
+
             </div>
 
         </div >

@@ -4,10 +4,11 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
-const Address = () => {
+const Address = (props) => {
   const [isSame, setIsSame] = useState(false);
   const [floorData, setFloorData] = useState([]);
   var [addressFields, setAddressFields] = useState({
+    requestNo: props.requestNo,
     hNo: "",
     floor: "",
     buildName: "",
@@ -20,6 +21,7 @@ const Address = () => {
     landmarkIndicate: ""
   }, []);
   var [supplyAddressFields, setSupplyAddressFields] = useState({
+    requestNo: props.requestNo,
     hNo: "",
     floor: "",
     buildName: "",
