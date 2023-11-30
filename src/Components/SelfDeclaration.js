@@ -16,50 +16,32 @@ const SelfDeclaration = (props) => {
                     <div className="col-md-12">
                         <div className="scroll" id="declarationDiv">
                             <p>
-                                I,{" "}
-                                <a 
-                                // id="dec_individual_name" 
-                                // className="dec_individual_name" 
-                                style={{ fontWeight: "bold" }}>{props.name}</a>{" "}
-                                {props.salutation}{" "}
-                                <a 
-                                // id="dec_individual_father_name" 
-                                // className="dec_individual_father_name" 
-                                style={{ fontWeight: "bold" }}>{props.fhname}</a>
+                                I,{" "}<u>{props.name}</u>{" "}{" "}<u>{props.salutation}</u>
+                                {" "}<u>{props.fhname}</u>{" "}
                                 Resident of{" "}
-                                <a 
-                                // id="dec_individual_address" 
-                                // className="dec_individual_address" 
-                                style={{ fontWeight: "bold" }}>_______________</a>{" "}
+                                _________
                                 (hereinafter referred to as "Applicant," which term shall mean and include executors, administrators, heirs, successors and assigns), do hereby swear and declare as under:
                             </p>
                             Or
                             <p>
-                                The{" "}
-                                <a id="dec_firm_name" className="dec_firm_name" style={{ fontWeight: "bold" }}>___</a>
+                                The{" "}<u>Company Name</u>
                                 , a company incorporated under the provisions of the Companies Act, 1956 or as amended, having its registered office at{" "}
-                                <a id="dec_firm_address" className="dec_firm_address" style={{ fontWeight: "bold" }}>____</a>{" "}
+                                <u>Company Address</u>{" "}
                                 (hereinafter referred to as "Applicant," which expression shall, unless repugnant to the context or meaning thereof, include its successors and assigns), through its Authorized representative Mr.{" "}
-                                <a id="dec_authorized_signatory" className="dec_authorized_signatory" style={{ fontWeight: "bold" }}>___</a>{" "}
+                                <u>Author Name</u>{" "}
                                 do hereby swear and declare as under:
                             </p>
                             Or
                             <p>
                                 A Sole proprietorship/ a partnership firm having its office at{" "}
-                                <a id="address2" className="dec_firm_address" style={{ fontWeight: "bold" }}>____</a>{" "}
+                                <u>Address</u>{" "}
                                 (hereinafter referred to as the applicant which unless the context otherwise provides includes its successors and assigns), through Mr.{" "}
-                                <a id="authorizedSignature2" className="dec_authorized_signatory" style={{ fontWeight: "bold" }}>___</a>{" "}
+                                <u>Author name</u>{" "}
                                 , who is a partner or an authorized representative do hereby swear and declare as under:
                             </p>
                             <p>
                                 THAT the Applicant is a lawful occupant of the premises at{" "}
-                                <a
-                                    id="address3"
-                                    className="dec_connection_address"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    77A, Floor 1 ,DDA,New Delhi
-                                </a>
+                                <u>Address</u>
                                 (hereinafter the "Premises").
                             </p>
                             {/* inclue static part */}
@@ -374,35 +356,11 @@ const SelfDeclaration = (props) => {
                             </p>
                             <p>
                                 I,{" "}
-                                <a
-                                    id="fullName"
-                                    className="dec_applicant_name"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    {props.name}
-                                </a>{" "}
+                                <u>Author Name</u>{" "}
                                 son/daughter/Authorized representative of{" "}
-                                <a
-                                    id="fatherName2"
-                                    className="dec_firm_or_father_name"
-                                    style={{ fontWeight: "bold" }}
-                                />{" "}
-                                resident of{" "}
-                                <a
-                                    id="fullAddress"
-                                    className="dec_applicant_address"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    77A, Floor 1 ,DDA,New Delhi
-                                </a>{" "}
+                                <u>Communication Address</u>{" "}
                                 Connection applied address{" "}
-                                <a
-                                    id="fullAddress1"
-                                    className="dec_connection_address"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    77A, Floor 1 ,DDA,New Delhi
-                                </a>{" "}
+                                <u>Address</u> {" "}
                                 hereby undertake that I shall:-
                             </p>
                             <p>
@@ -416,10 +374,10 @@ const SelfDeclaration = (props) => {
                             </p>
                             <table
                                 className="center"
-                                style={{ width: "60%", textAlign: "center" }}
+                                style={{ width: "60%", textAlign: "center",border:'solid 1px black' }}
                             >
                                 <tbody>
-                                    <tr style={{ backgroundColor: "black", color: "white" }}>
+                                    <tr style={{ backgroundColor: "grey" }}>
                                         <th style={{ textAlign: "center" }}>Meter &amp; Bus bar</th>
                                         <th style={{ textAlign: "center" }}>Length(mm)</th>
                                         <th style={{ textAlign: "center" }}>Width(mm)</th>
@@ -801,27 +759,11 @@ const SelfDeclaration = (props) => {
                             <p />
                             <p>
                                 I,{" "}
-                                <a
-                                    id="detail1"
-                                    className="dec_applicant_name"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    {props.name}
-                                </a>{" "}
+                                <u>{props.name}</u>{" "}
                                 Son/Daughter/Wife of{" "}
-                                <a
-                                    id="detail2"
-                                    className="dec_applicant_father_name"
-                                    style={{ fontWeight: "bold" }}
-                                >{props.salutation}</a>
+                                <u>{props.fhname}</u>{" "}
                                 Resident of{" "}
-                                <a
-                                    id="detail3"
-                                    className="dec_applicant_address"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    ________________
-                                </a>{" "}
+                                <u>Address</u>{" "}
                                 (hereinafter referred to as "Applicant", which term shall mean
                                 and include executors, administrators, heirs, successors and
                                 assigns), do hereby swear and declare as under:
@@ -829,19 +771,11 @@ const SelfDeclaration = (props) => {
                             <p>
                                 A. That the Applicant / deponent is owner / occupant of the
                                 premises bearing no. , situated at{" "}
-                                <a
-                                    id="detail4"
-                                    className="dec_connection_address"
-                                    style={{ fontWeight: "bold" }}
-                                >
-                                    _________________
-                                </a>
+                                <u>Address</u>
                             </p>
                             <p>
                                 B. That I have applied for{" "}
-                                <a id="declarationTariff" style={{ fontWeight: "bold" }}>
-                                    -Select-
-                                </a>
+                                <u>Consumer Type</u>
                                 - new connection (Domestic/ Non-domestic/ Industrial at the
                                 above-mentioned address
 

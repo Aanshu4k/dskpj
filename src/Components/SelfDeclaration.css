@@ -36,3 +36,7 @@ tr:hover {
     padding: 0;
     margin:0;
 }
+u{
+    font-weight: bold;
+    color:rgb(32, 112, 178);
+}

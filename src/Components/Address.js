@@ -5,10 +5,10 @@ import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 
 const Address = (props) => {
-  const [isSame, setIsSame] = useState(false);
+  let [isSame, setIsSame] = useState(false);
   const [floorData, setFloorData] = useState([]);
   var [addressFields, setAddressFields] = useState({
-    requestNo: props.requestNo,
+    requestNo: 'props.requestNo.rNum',
     hNo: "",
     floor: "",
     buildName: "",
@@ -21,7 +21,7 @@ const Address = (props) => {
     landmarkIndicate: ""
   }, []);
   var [supplyAddressFields, setSupplyAddressFields] = useState({
-    requestNo: props.requestNo,
+    requestNo: 'props.requestNo.rNum',
     hNo: "",
     floor: "",
     buildName: "",
@@ -59,7 +59,7 @@ const Address = (props) => {
         },
         body: JSON.stringify(addressFields),
       });
-
+      console.log(addressFields)
       if (response.ok) {
         alert('User Address Details Saved Successfully');
       } else {
@@ -76,7 +76,7 @@ const Address = (props) => {
         },
         body: JSON.stringify(supplyAddressFields),
       });
-
+      console.log(supplyAddressFields)
       if (response.ok) {
         alert('User Address Details Saved Successfully');
       } else {
@@ -89,6 +89,10 @@ const Address = (props) => {
 
   const handleChange = (e) => {
     setIsSame(!isSame);
+    if (!isSame) {
+      setAddressFields('')
+    }
+    console.log(isSame)
   };
   const handleInputChange2 = (e) => {
     const { name, value } = e.target;
@@ -97,6 +101,9 @@ const Address = (props) => {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setAddressFields({ ...addressFields, [name]: value });
+    if (isSame) {
+      setSupplyAddressFields({ ...addressFields, [name]: value });
+    }
 
   };
   return (
@@ -185,94 +192,93 @@ const Address = (props) => {
         />{" "}
         Is supply address same as communication address?
       </label>
-      {!isSame && (
-        <Row className="mb-3">
-          <Form.Group as={Col} md="4" controlId="validationCustom01">
-            <Form.Label>House No./Property No.</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              placeholder=""
-              disabled={isSame}
-              name="hNo"
-              value={supplyAddressFields.hNo}
-              onChange={handleInputChange2}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4" controlId="validationCustom02">
-            <Form.Label>Floor</Form.Label>
-            <br />
-            <select name="floor" value={supplyAddressFields.floor} onChange={handleInputChange2} style={{ width: "50%" }} disabled={isSame}>
-              <option value="Ground">Ground</option>
-              <option value="Basement">Basement</option>
-              <option value="Floor 1">Floor 1</option>
-              <option value="Floor 2">Floor 2</option>
-              <option value="Floor 3">Floor 3</option>
-              <option value="Floor 4">Floor 4</option>
-            </select>
-          </Form.Group>
-          <Form.Group as={Col} md="3">
-            <Form.Label>Building Name</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name='buildName'
-              placeholder=""
-              value={supplyAddressFields.buildName}
-              onChange={handleInputChange2}
-              disabled={isSame}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>Street</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name='street'
-              value={supplyAddressFields.street}
-              onChange={handleInputChange2}
-              placeholder=""
-              disabled={isSame}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>Colony Area</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name='area'
-              value={supplyAddressFields.area}
-              onChange={handleInputChange2}
-              placeholder=""
-              disabled={isSame}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="3">
-            <Form.Label>Landmark Details</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name='landmarkDetails'
-              value={supplyAddressFields.landmarkDetails}
-              onChange={handleInputChange2}
-              placeholder=""
-              disabled={isSame}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>City Postal Code</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              name='cityPostalCode'
-              value={supplyAddressFields.cityPostalCode}
-              onChange={handleInputChange2}
-              placeholder=""
-              disabled={isSame}
-            />
-          </Form.Group>
-        </Row>
-      )}
+
+      <Row className="mb-3">
+        <Form.Group as={Col} md="4" controlId="validationCustom01">
+          <Form.Label>House No./Property No.</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            placeholder=""
+            disabled={isSame}
+            name="hNo"
+            value={isSame ? addressFields.hNo : supplyAddressFields.hNo}
+            onChange={handleInputChange2}
+          />
+        </Form.Group>
+        <Form.Group as={Col} md="4" controlId="validationCustom02">
+          <Form.Label>Floor</Form.Label>
+          <br />
+          <select name="floor" value={supplyAddressFields.floor} onChange={handleInputChange2} style={{ width: "50%" }} disabled={isSame}>
+            <option value="Ground">Ground</option>
+            <option value="Basement">Basement</option>
+            <option value="Floor 1">Floor 1</option>
+            <option value="Floor 2">Floor 2</option>
+            <option value="Floor 3">Floor 3</option>
+            <option value="Floor 4">Floor 4</option>
+          </select>
+        </Form.Group>
+        <Form.Group as={Col} md="3">
+          <Form.Label>Building Name</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            name='buildName'
+            placeholder=""
+            value={supplyAddressFields.buildName}
+            onChange={handleInputChange2}
+            disabled={isSame}
+          />
+        </Form.Group>
+        <Form.Group as={Col} md="4">
+          <Form.Label>Street</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            name='street'
+            value={supplyAddressFields.street}
+            onChange={handleInputChange2}
+            placeholder=""
+            disabled={isSame}
+          />
+        </Form.Group>
+        <Form.Group as={Col} md="4">
+          <Form.Label>Colony Area</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            name='area'
+            value={supplyAddressFields.area}
+            onChange={handleInputChange2}
+            placeholder=""
+            disabled={isSame}
+          />
+        </Form.Group>
+        <Form.Group as={Col} md="3">
+          <Form.Label>Landmark Details</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            name='landmarkDetails'
+            value={supplyAddressFields.landmarkDetails}
+            onChange={handleInputChange2}
+            placeholder=""
+            disabled={isSame}
+          />
+        </Form.Group>
+        <Form.Group as={Col} md="4">
+          <Form.Label>City Postal Code</Form.Label>
+          <Form.Control
+            required
+            type="text"
+            name='cityPostalCode'
+            value={supplyAddressFields.cityPostalCode}
+            onChange={handleInputChange2}
+            placeholder=""
+            disabled={isSame}
+          />
+        </Form.Group>
+      </Row>
 
       <div className="communication-header">
         <strong>INDICATE LANDMARKS</strong>
